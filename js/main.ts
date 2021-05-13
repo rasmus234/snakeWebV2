@@ -16,12 +16,13 @@ export const canvasDimension: Vec2D = {x: canvas.width, y: canvas.height}
 export const tileWidth = 20, tileHeight = 20;
 
 
-const snake1: Snake = new Snake(player.PLAYER1,{x: 0, y: 6},{x: 1, y: 6},{x: 2, y: 6})
-const snake2: Snake = new Snake(player.PLAYER2,{x: 10, y: 6},{x: 11, y: 6},{x: 12, y: 6})
-export const snakes: Snake[] = [snake1,snake2]
+const snake1: Snake = new Snake(player.PLAYER1, {x: 0, y: 6}, {x: 1, y: 6}, {x: 2, y: 6})
+const snake2: Snake = new Snake(player.PLAYER2, {x: 10, y: 6}, {x: 11, y: 6}, {x: 12, y: 6})
+export const snakes: Snake[] = [snake1, snake2]
 
-const foods: Food[] = [new Food(),new Food(),new Food(),new Food()]
-const entities: Entity[] = [snake1,snake2, ...foods];
+const foods: Food[] = [new Food(), new Food(), new Food(), new Food()]
+const entities: Entity[] = [...snakes, ...foods];
+entities.forEach(console.log)
 
 function draw(board: CanvasRenderingContext2D) {
     board.clearRect(0, 0, canvas.width, canvas.height);
@@ -34,6 +35,7 @@ function tick() {
 }
 
 let prevRenderTime: number
+
 function gameLoop(currentTime) {
     window.requestAnimationFrame(gameLoop)
     const difference = (currentTime - prevRenderTime) / 1000

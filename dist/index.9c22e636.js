@@ -491,7 +491,8 @@ const snake2 = new _snake.Snake(_player.player.PLAYER2, {
 });
 const snakes = [snake1, snake2];
 const foods = [new _food.Food(), new _food.Food(), new _food.Food(), new _food.Food()];
-const entities = [snake1, snake2, ...foods];
+const entities = [...snakes, ...foods];
+entities.forEach(console.log);
 function draw(board) {
   board.clearRect(0, 0, canvas.width, canvas.height);
   entities.forEach(entity => entity.draw(context2D));
