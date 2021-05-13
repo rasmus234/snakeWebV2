@@ -3,6 +3,7 @@ import {Food} from "./food";
 import {Vec2D} from "./vec2D";
 import {Drawable} from "./Drawable";
 import {player} from "./player";
+import {Entity} from "./entity";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const context2D: CanvasRenderingContext2D = canvas.getContext("2d")
@@ -17,13 +18,10 @@ export const tileWidth = 20, tileHeight = 20;
 
 const snake1: Snake = new Snake(player.PLAYER1,{x: 0, y: 6},{x: 1, y: 6},{x: 2, y: 6})
 const snake2: Snake = new Snake(player.PLAYER2,{x: 10, y: 6},{x: 11, y: 6},{x: 12, y: 6})
-
-const food: Food = new Food()
 export const snakes: Snake[] = [snake1,snake2]
-const entities: Drawable[] = [snake1,snake2, food];
-console.log(food);
-console.log(snake1);
 
+const foods: Food[] = [new Food(),new Food(),new Food(),new Food()]
+const entities: Entity[] = [snake1,snake2, ...foods];
 
 function draw(board: CanvasRenderingContext2D) {
     board.clearRect(0, 0, canvas.width, canvas.height);
@@ -31,13 +29,11 @@ function draw(board: CanvasRenderingContext2D) {
 }
 
 function tick() {
-    snakes.forEach(snake => snake.update())
-    food.update(snakes)
+    entities.forEach(entity => entity.update())
     draw(context2D)
 }
 
 let prevRenderTime: number
-
 function gameLoop(currentTime) {
     window.requestAnimationFrame(gameLoop)
     const difference = (currentTime - prevRenderTime) / 1000

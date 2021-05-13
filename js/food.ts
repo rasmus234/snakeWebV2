@@ -1,9 +1,10 @@
 import {Vec2D} from "./vec2D";
 import {Drawable} from "./Drawable";
-import {canvasDimension, tileWidth, tileHeight} from "./main";
+import {canvasDimension, tileWidth, tileHeight, snakes} from "./main";
 import {Snake} from "./snake";
+import {Entity} from "./entity";
 
-export class Food implements Drawable {
+export class Food implements Entity {
   food: Vec2D
   color = "#fdc601";
 
@@ -18,7 +19,7 @@ export class Food implements Drawable {
     gameboard.strokeRect(this.food.x * tileWidth, this.food.y * tileHeight, tileWidth, tileHeight)
   }
 
-  update(snakes: Snake[]) {
+  update() {
 
     snakes.forEach(snake => {
       let snakeHead = snake.snakeParts[0]

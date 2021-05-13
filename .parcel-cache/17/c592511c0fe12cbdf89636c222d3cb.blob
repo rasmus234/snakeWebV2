@@ -497,7 +497,9 @@ function draw(board) {
   entities.forEach(entity => entity.draw(context2D));
 }
 function tick() {
-  entities.forEach(entity => entity.update());
+  // snakes.forEach(snake => snake.update())
+  // foods.forEach(food => food.update())
+  entities.forEach(entity => entity.update);
   draw(context2D);
 }
 let prevRenderTime;
@@ -757,4 +759,4 @@ class Food {
 
 },{"./main":"3fL2n","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}]},["6xRmv","3fL2n"], "3fL2n", "parcelRequire5504")
 
-//# sourceMappingURL=index.9c22e636.js.map
+//# sourceMappingURL=index.HASH_REF_0be583634b8016caed6497d99c22e636.js.map

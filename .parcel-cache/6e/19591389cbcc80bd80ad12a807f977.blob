@@ -490,14 +490,18 @@ const snake2 = new _snake.Snake(_player.player.PLAYER2, {
   y: 6
 });
 const snakes = [snake1, snake2];
+const food = new _food.Food();
 const foods = [new _food.Food(), new _food.Food(), new _food.Food(), new _food.Food()];
 const entities = [snake1, snake2, ...foods];
+console.log(food);
+console.log(snake1);
 function draw(board) {
   board.clearRect(0, 0, canvas.width, canvas.height);
   entities.forEach(entity => entity.draw(context2D));
 }
 function tick() {
-  entities.forEach(entity => entity.update());
+  snakes.forEach(snake => snake.update());
+  foods.forEach(food => food.update(snakes));
   draw(context2D);
 }
 let prevRenderTime;
@@ -734,8 +738,8 @@ class Food {
     gameboard.fillRect(this.food.x * _main.tileWidth, this.food.y * _main.tileHeight, _main.tileWidth, _main.tileHeight);
     gameboard.strokeRect(this.food.x * _main.tileWidth, this.food.y * _main.tileHeight, _main.tileWidth, _main.tileHeight);
   }
-  update() {
-    _main.snakes.forEach(snake => {
+  update(snakes) {
+    snakes.forEach(snake => {
       let snakeHead = snake.snakeParts[0];
       let snakeOnFood = snakeHead.x === this.food.x && snakeHead.y === this.food.y;
       if (snakeOnFood) {
@@ -757,4 +761,4 @@ class Food {
 
 },{"./main":"3fL2n","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}]},["6xRmv","3fL2n"], "3fL2n", "parcelRequire5504")
 
-//# sourceMappingURL=index.9c22e636.js.map
+//# sourceMappingURL=index.HASH_REF_0be583634b8016caed6497d99c22e636.js.map

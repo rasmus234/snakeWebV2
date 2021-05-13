@@ -4,9 +4,10 @@ import {Vec2D} from "./vec2D";
 import {getDirection} from "./input";
 import {Drawable} from "./Drawable";
 import {player} from "./player";
+import {Entity} from "./entity";
 
 
-export class Snake implements Drawable {
+export class Snake implements Entity {
 
   playerNumber: player
   speed = 10
