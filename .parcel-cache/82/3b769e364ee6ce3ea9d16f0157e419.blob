@@ -1,0 +1,55 @@
+var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
+_parcelHelpers.defineInteropFlag(exports);
+_parcelHelpers.export(exports, "getDirection", function () {
+  return getDirection;
+});
+let lastDirection1;
+let direction1 = {
+  x: 0,
+  y: 1
+};
+let lastDirection2;
+let direction2 = {
+  x: 0,
+  y: 1
+};
+window.addEventListener("keydown", ev => {
+  switch (ev.key) {
+    case "ArrowUp":
+    case "w":
+      if (lastDirection1.y === 1) break;
+      direction1 = {
+        x: 0,
+        y: -1
+      };
+      break;
+    case "ArrowDown":
+    case "s":
+      if (lastDirection1.y === -1) break;
+      direction1 = {
+        x: 0,
+        y: +1
+      };
+      break;
+    case "ArrowRight":
+    case "d":
+      if (lastDirection1.x === -1) break;
+      direction1 = {
+        x: 1,
+        y: 0
+      };
+      break;
+    case "ArrowLeft":
+    case "a":
+      if (lastDirection1.x === 1) break;
+      direction1 = {
+        x: -1,
+        y: 0
+      };
+      break;
+  }
+});
+function getDirection() {
+  lastDirection1 = direction1;
+  return direction1;
+}

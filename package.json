@@ -1,0 +1,21 @@
+{
+  "name": "ssnakeweb1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "dev": "parcel index.html --open",
+    "build": "parcel build index.html"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel": "*"
+  },
+  "dependencies": {
+    "canvas": "^2.7.0",
+    "jsdom": "^14.1.0",
+    "ts-node": "^9.1.1"
+  }
+}

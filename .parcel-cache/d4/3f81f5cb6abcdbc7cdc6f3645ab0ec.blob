@@ -1,0 +1,137 @@
+var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
+_parcelHelpers.defineInteropFlag(exports);
+_parcelHelpers.export(exports, "canvasDimension", function () {
+  return canvasDimension;
+});
+_parcelHelpers.export(exports, "tileWidth", function () {
+  return tileWidth;
+});
+_parcelHelpers.export(exports, "tileHeight", function () {
+  return tileHeight;
+});
+let t = {
+  x: 0,
+  y: 1
+};
+function e() {
+  return t;
+}
+window.addEventListener("keydown", e => {
+  switch (e.key) {
+    case "ArrowUp":
+    case "w":
+      if (1 === t.y) break;
+      t = {
+        x: 0,
+        y: -1
+      };
+      break;
+    case "ArrowDown":
+    case "s":
+      if (-1 === t.y) break;
+      t = {
+        x: 0,
+        y: 1
+      };
+      break;
+    case "ArrowRight":
+    case "d":
+      if (-1 === t.x) break;
+      t = {
+        x: 1,
+        y: 0
+      };
+      break;
+    case "ArrowLeft":
+    case "a":
+      if (1 === t.x) break;
+      t = {
+        x: -1,
+        y: 0
+      };
+  }
+});
+const i = document.getElementById("canvas"), s = i.getContext("2d");
+s.fillStyle = "#FF0000";
+(i.width = 1e3, i.height = 500);
+const canvasDimension = {
+  x: i.width,
+  y: i.height
+};
+let a;
+const tileWidth = 20, tileHeight = 20;
+const o = new (class {
+  speed = 10;
+  color = "#FF0000";
+  constructor(...t) {
+    this.snakeParts = t;
+  }
+  draw(t) {
+    (t.fillStyle = this.color, this.snakeParts.forEach(e => t.fillRect(e.x * tileWidth, e.y * tileHeight, tileWidth, tileHeight)));
+  }
+  update(t, e) {
+    this.move(t, e);
+  }
+  move(t, i) {
+    this.snakeParts.pop();
+    let s = this.snakeParts[0], a = {
+      x: s.x + e().x,
+      y: s.y + e().y
+    }, o = this.checkOverlap(a);
+    ((this.checkBounds(a, t, i) || o) && (window.location = "/", alert("dead")), this.snakeParts.unshift(a));
+  }
+  checkOverlap(t) {
+    return this.snakeParts.some(e => e.x === t.x && e.y === t.y);
+  }
+  checkBounds(t, e, i) {
+    return t.x < 0 || t.x > e / tileWidth || t.y < 0 || t.y >= i / tileHeight;
+  }
+  addSegment() {
+    let t = this.snakeParts[this.snakeParts.length - 1];
+    this.snakeParts.push(t);
+  }
+})({
+  x: 0,
+  y: 6
+}, {
+  x: 0,
+  y: 5
+}, {
+  x: 0,
+  y: 4
+}, {
+  x: 0,
+  y: 3
+}, {
+  x: 0,
+  y: 2
+}), n = new (class {
+  color = "#fdc601";
+  constructor(t) {
+    this.food = t;
+  }
+  draw(t) {
+    (t.fillStyle = this.color, t.fillRect(this.food.x * tileWidth, this.food.y * tileHeight, tileWidth, tileHeight));
+  }
+  update(t) {
+    let e = t.snakeParts[0];
+    e.x === this.food.x && e.y === this.food.y && (t.addSegment(), t.speed += 3, this.setRandomLocation());
+  }
+  setRandomLocation() {
+    let t = Math.floor(Math.random() * (canvasDimension.x / tileWidth)), e = Math.floor(Math.random() * (canvasDimension.y / tileHeight));
+    this.food = {
+      x: t,
+      y: e
+    };
+  }
+})({
+  x: 1,
+  y: 2
+});
+function h() {
+  var t;
+  (o.update(i.width, i.height), n.update(o), (t = s).clearRect(0, 0, i.width, i.height), n.draw(t), o.draw(t), console.log(o.snakeParts));
+}
+(n.setRandomLocation(), console.log(n), console.log(o), window.requestAnimationFrame(function t(e) {
+  (window.requestAnimationFrame(t), (e - a) / 1e3 < 1 / o.speed || (a = e, h()));
+}));

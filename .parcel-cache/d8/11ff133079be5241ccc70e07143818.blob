@@ -1,0 +1,52 @@
+var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
+_parcelHelpers.defineInteropFlag(exports);
+_parcelHelpers.export(exports, "Snake", function () {
+  return Snake;
+});
+require("./Drawable");
+var _main = require("./main");
+var _input = require("./input");
+class Snake {
+  speed = 10;
+  color = "cyan";
+  constructor(...bodyParts) {
+    this.snakeParts = bodyParts;
+  }
+  draw(gameboard) {
+    gameboard.fillStyle = this.color;
+    gameboard.strokeStyle = "black";
+    this.snakeParts.forEach(part => gameboard.strokeRect(part.x * _main.tileWidth, part.y * _main.tileHeight, _main.tileWidth - 5, _main.tileHeight));
+    this.snakeParts.forEach(part => gameboard.fillRect(part.x * _main.tileWidth, part.y * _main.tileHeight, _main.tileWidth, _main.tileHeight));
+  }
+  update() {
+    this.move(_main.canvasDimension.x, _main.canvasDimension.y);
+  }
+  move(canvasWidth, canvasHeight) {
+    this.snakeParts.pop();
+    let currentHead = this.snakeParts[0];
+    let newHead = {
+      x: currentHead.x + _input.getDirection().x,
+      y: currentHead.y + _input.getDirection().y
+    };
+    let overlapOfSelf = this.checkOverlap(newHead);
+    let outBounds = this.checkBounds(newHead);
+    if (outBounds || overlapOfSelf) {
+      // @ts-ignore
+      window.location = "/";
+      alert("dead");
+    }
+    this.snakeParts.unshift(newHead);
+  }
+  checkOverlap(newHead) {
+    let overlap = this.snakeParts.some(bodyPart => bodyPart.x === newHead.x && bodyPart.y === newHead.y);
+    return overlap;
+  }
+  checkBounds(newHead) {
+    let outBounds = newHead.x < 0 || newHead.x > _main.canvasDimension.x / _main.tileWidth || newHead.y < 0 || newHead.y >= _main.canvasDimension.y / _main.tileHeight;
+    return outBounds;
+  }
+  addSegment() {
+    let tail = this.snakeParts[this.snakeParts.length - 1];
+    this.snakeParts.push(tail);
+  }
+}

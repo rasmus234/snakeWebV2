@@ -1,0 +1,38 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fafafa">
+</head>
+
+<body>
+
+<canvas id="canvas"></canvas>
+
+<style data-parcel-key="dd2ec0d3d9ba5d4ff975da403db20146">
+  body {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    background-color: black;
+  }
+
+  #canvas {
+    background-color: #cccccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+  }
+</style>
+<script src="a68bfd51ad5149e600197f42c6d60710" type="module"></script>
+</body>
+
+</html>
