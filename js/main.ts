@@ -12,26 +12,26 @@ const context2D: CanvasRenderingContext2D = canvas.getContext("2d")
 const size: number = 1000
 canvas.width = size
 canvas.height = size / 2
-export const canvasDimension: Vec2D = {x: canvas.width, y: canvas.height}
+export const canvasDimension: Vec2D = new Vec2D( canvas.width, canvas.height)
 export const tileWidth = 20, tileHeight = 20;
 
 
-const snake1: Snake = new Snake(player.PLAYER1, {x: 0, y: 6}, {x: 1, y: 6}, {x: 2, y: 6})
-const snake2: Snake = new Snake(player.PLAYER2, {x: 10, y: 6}, {x: 11, y: 6}, {x: 12, y: 6})
+const snake1: Snake = new Snake(player.PLAYER1, new Vec2D( 0, 6),new Vec2D( 1, 6),new Vec2D( 2, 6));
+const snake2: Snake = new Snake(player.PLAYER2, new Vec2D( 10, 6),new Vec2D( 11, 6),new Vec2D( 12, 6))
 export const snakes: Snake[] = [snake1, snake2]
 
 const foods: Food[] = [new Food(), new Food(), new Food(), new Food()]
 const entities: Entity[] = [...snakes, ...foods];
 entities.forEach(console.log)
 
-function draw(board: CanvasRenderingContext2D) {
-    board.clearRect(0, 0, canvas.width, canvas.height);
+function draw() {
+    context2D.clearRect(0, 0, canvas.width, canvas.height);
     entities.forEach(entity => entity.draw(context2D))
 }
 
 function tick() {
     entities.forEach(entity => entity.update())
-    draw(context2D)
+    draw()
 }
 
 let prevRenderTime: number

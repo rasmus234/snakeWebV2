@@ -20,7 +20,7 @@ export class Snake implements Entity {
         this.snakeParts = bodyParts
     }
 
-    draw(gameboard: CanvasRenderingContext2D) {
+    draw(gameboard: CanvasRenderingContext2D): void {
 
         gameboard.fillStyle = this.color
         gameboard.strokeStyle = "black"
@@ -29,16 +29,13 @@ export class Snake implements Entity {
     }
 
 
-    update() {
+    update(): void {
         this.move();
     }
 
-    private move() {
+    private move(): void {
         let currentHead: Vec2D = this.snakeParts[0];
-        let newHead: Vec2D = {
-            x: currentHead.x + getDirection(this.playerNumber).x,
-            y: currentHead.y + getDirection(this.playerNumber).y
-        };
+        let newHead: Vec2D = new Vec2D(currentHead.x + getDirection(this.playerNumber).x,currentHead.y + getDirection(this.playerNumber).y)
         const otherSnakes: Snake[] = snakes.filter(snake => snake.playerNumber != this.playerNumber);
         const overlapOtherSnakes = this.checkOverlapOtherSnakes(otherSnakes, newHead);
         let overlapOfSelf = this.checkOverlap(newHead);
@@ -54,23 +51,22 @@ export class Snake implements Entity {
     private checkOverlapOtherSnakes(otherSnakes: Snake[], newHead: Vec2D): boolean {
         let overlaps = false;
         otherSnakes.forEach(snake => {
-            if (snake.snakeParts.some(snakePart => snakePart.x === newHead.x && snakePart.y === newHead.y)) overlaps = true
+            if (snake.snakeParts.some(snakePart => snakePart.isOn(newHead))) overlaps = true
         })
-        console.log(overlaps)
         return overlaps
     }
 
-    private checkOverlap(newHead: Vec2D) {
-        let overlap = this.snakeParts.some(bodyPart => bodyPart.x === newHead.x && bodyPart.y === newHead.y)
+    private checkOverlap(newHead: Vec2D): boolean {
+        let overlap = this.snakeParts.some(bodyPart => bodyPart.isOn(newHead))
         return overlap;
     }
 
-    private checkBounds(newHead: Vec2D) {
+    private checkBounds(newHead: Vec2D): boolean {
         let outBounds = newHead.x < 0 || newHead.x > canvasDimension.x / tileWidth || newHead.y < 0 || newHead.y >= canvasDimension.y / tileHeight;
         return outBounds;
     }
 
-    public addSegment() {
+    public addSegment(): void {
         let tail: Vec2D = this.snakeParts[this.snakeParts.length - 1]
         this.snakeParts.push(tail)
     }

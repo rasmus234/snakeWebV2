@@ -458,48 +458,28 @@ _parcelHelpers.export(exports, "snakes", function () {
 });
 var _snake = require("./snake");
 var _food = require("./food");
+var _vec2D = require("./vec2D");
 var _player = require("./player");
 const canvas = document.getElementById("canvas");
 const context2D = canvas.getContext("2d");
 const size = 1000;
 canvas.width = size;
 canvas.height = size / 2;
-const canvasDimension = {
-  x: canvas.width,
-  y: canvas.height
-};
+const canvasDimension = new _vec2D.Vec2D(canvas.width, canvas.height);
 const tileWidth = 20, tileHeight = 20;
-const snake1 = new _snake.Snake(_player.player.PLAYER1, {
-  x: 0,
-  y: 6
-}, {
-  x: 1,
-  y: 6
-}, {
-  x: 2,
-  y: 6
-});
-const snake2 = new _snake.Snake(_player.player.PLAYER2, {
-  x: 10,
-  y: 6
-}, {
-  x: 11,
-  y: 6
-}, {
-  x: 12,
-  y: 6
-});
+const snake1 = new _snake.Snake(_player.player.PLAYER1, new _vec2D.Vec2D(0, 6), new _vec2D.Vec2D(1, 6), new _vec2D.Vec2D(2, 6));
+const snake2 = new _snake.Snake(_player.player.PLAYER2, new _vec2D.Vec2D(10, 6), new _vec2D.Vec2D(11, 6), new _vec2D.Vec2D(12, 6));
 const snakes = [snake1, snake2];
 const foods = [new _food.Food(), new _food.Food(), new _food.Food(), new _food.Food()];
 const entities = [...snakes, ...foods];
 entities.forEach(console.log);
-function draw(board) {
-  board.clearRect(0, 0, canvas.width, canvas.height);
+function draw() {
+  context2D.clearRect(0, 0, canvas.width, canvas.height);
   entities.forEach(entity => entity.draw(context2D));
 }
 function tick() {
   entities.forEach(entity => entity.update());
-  draw(context2D);
+  draw();
 }
 let prevRenderTime;
 function gameLoop(currentTime) {
@@ -511,7 +491,7 @@ function gameLoop(currentTime) {
 }
 window.requestAnimationFrame(gameLoop);
 
-},{"./snake":"6Drdo","./food":"6ULAr","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./player":"5AQdY"}],"6Drdo":[function(require,module,exports) {
+},{"./snake":"6Drdo","./food":"6ULAr","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./player":"5AQdY","./vec2D":"2BBDe"}],"6Drdo":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 _parcelHelpers.defineInteropFlag(exports);
 _parcelHelpers.export(exports, "Snake", function () {
@@ -519,6 +499,7 @@ _parcelHelpers.export(exports, "Snake", function () {
 });
 require("./Drawable");
 var _main = require("./main");
+var _vec2D = require("./vec2D");
 var _input = require("./input");
 var _player = require("./player");
 class Snake {
@@ -540,10 +521,7 @@ class Snake {
   }
   move() {
     let currentHead = this.snakeParts[0];
-    let newHead = {
-      x: currentHead.x + _input.getDirection(this.playerNumber).x,
-      y: currentHead.y + _input.getDirection(this.playerNumber).y
-    };
+    let newHead = new _vec2D.Vec2D(currentHead.x + _input.getDirection(this.playerNumber).x, currentHead.y + _input.getDirection(this.playerNumber).y);
     const otherSnakes = _main.snakes.filter(snake => snake.playerNumber != this.playerNumber);
     const overlapOtherSnakes = this.checkOverlapOtherSnakes(otherSnakes, newHead);
     let overlapOfSelf = this.checkOverlap(newHead);
@@ -559,13 +537,12 @@ class Snake {
   checkOverlapOtherSnakes(otherSnakes, newHead) {
     let overlaps = false;
     otherSnakes.forEach(snake => {
-      if (snake.snakeParts.some(snakePart => snakePart.x === newHead.x && snakePart.y === newHead.y)) overlaps = true;
+      if (snake.snakeParts.some(snakePart => snakePart.isOn(newHead))) overlaps = true;
     });
-    console.log(overlaps);
     return overlaps;
   }
   checkOverlap(newHead) {
-    let overlap = this.snakeParts.some(bodyPart => bodyPart.x === newHead.x && bodyPart.y === newHead.y);
+    let overlap = this.snakeParts.some(bodyPart => bodyPart.isOn(newHead));
     return overlap;
   }
   checkBounds(newHead) {
@@ -578,7 +555,7 @@ class Snake {
   }
 }
 
-},{"./Drawable":"RvnMX","./main":"3fL2n","./input":"5iTXl","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./player":"5AQdY"}],"RvnMX":[function(require,module,exports) {
+},{"./Drawable":"RvnMX","./main":"3fL2n","./input":"5iTXl","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./player":"5AQdY","./vec2D":"2BBDe"}],"RvnMX":[function(require,module,exports) {
 
 },{}],"5iTXl":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
@@ -717,12 +694,30 @@ let player;
   player[player["PLAYER2"] = 1] = "PLAYER2";
 })(player || (player = {}));
 
+},{"@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"2BBDe":[function(require,module,exports) {
+var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
+_parcelHelpers.defineInteropFlag(exports);
+_parcelHelpers.export(exports, "Vec2D", function () {
+  return Vec2D;
+});
+class Vec2D {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+  isOn(other) {
+    if (other.y === this.y && other.x === this.x) return true;
+    return false;
+  }
+}
+
 },{"@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"6ULAr":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 _parcelHelpers.defineInteropFlag(exports);
 _parcelHelpers.export(exports, "Food", function () {
   return Food;
 });
+var _vec2D = require("./vec2D");
 var _main = require("./main");
 class Food {
   color = "#fdc601";
@@ -738,10 +733,10 @@ class Food {
   update() {
     _main.snakes.forEach(snake => {
       let snakeHead = snake.snakeParts[0];
-      let snakeOnFood = snakeHead.x === this.food.x && snakeHead.y === this.food.y;
+      let snakeOnFood = snakeHead.isOn(this.food);
       if (snakeOnFood) {
         snake.addSegment();
-        snake.speed += 3;
+        snake.speed += 2;
         this.setRandomLocation();
       }
     });
@@ -749,13 +744,10 @@ class Food {
   setRandomLocation() {
     let x = Math.floor(Math.random() * (_main.canvasDimension.x / _main.tileWidth));
     let y = Math.floor(Math.random() * (_main.canvasDimension.y / _main.tileHeight));
-    this.food = {
-      x: x,
-      y: y
-    };
+    this.food = new _vec2D.Vec2D(x, y);
   }
 }
 
-},{"./main":"3fL2n","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}]},["6xRmv","3fL2n"], "3fL2n", "parcelRequire5504")
+},{"./main":"3fL2n","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./vec2D":"2BBDe"}]},["6xRmv","3fL2n"], "3fL2n", "parcelRequire5504")
 
 //# sourceMappingURL=index.9c22e636.js.map

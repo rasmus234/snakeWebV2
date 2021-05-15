@@ -23,10 +23,10 @@ export class Food implements Entity {
 
         snakes.forEach(snake => {
             let snakeHead = snake.snakeParts[0]
-            let snakeOnFood = (snakeHead.x === this.food.x && snakeHead.y === this.food.y)
+            let snakeOnFood = snakeHead.isOn(this.food)
             if (snakeOnFood) {
                 snake.addSegment()
-                snake.speed += 3
+                snake.speed += 2
                 this.setRandomLocation()
             }
         });
@@ -36,7 +36,7 @@ export class Food implements Entity {
     setRandomLocation() {
         let x = Math.floor(Math.random() * (canvasDimension.x / tileWidth));
         let y = Math.floor(Math.random() * (canvasDimension.y / tileHeight));
-        this.food = {x: x, y: y}
+        this.food = new Vec2D(x,y)
     }
 
 }
