@@ -11,11 +11,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/lodash": "^4.14.169",
     "parcel": "*"
   },
   "dependencies": {
     "canvas": "^2.7.0",
     "jsdom": "^14.1.0",
+    "lodash": "^4.17.21",
     "ts-node": "^9.1.1"
   }
 }

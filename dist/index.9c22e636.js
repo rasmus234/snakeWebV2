@@ -456,23 +456,41 @@ _parcelHelpers.export(exports, "tileHeight", function () {
 _parcelHelpers.export(exports, "snakes", function () {
   return snakes;
 });
+_parcelHelpers.export(exports, "powerups", function () {
+  return powerups;
+});
+_parcelHelpers.export(exports, "foods", function () {
+  return foods;
+});
+_parcelHelpers.export(exports, "entityLocations", function () {
+  return entityLocations;
+});
+_parcelHelpers.export(exports, "entities", function () {
+  return entities;
+});
 var _snake = require("./snake");
 var _food = require("./food");
 var _vec2D = require("./vec2D");
 var _player = require("./player");
+var _powerup = require("./powerup");
 const canvas = document.getElementById("canvas");
 const context2D = canvas.getContext("2d");
-const size = 1000;
+const size = 1600;
 canvas.width = size;
 canvas.height = size / 2;
 const canvasDimension = new _vec2D.Vec2D(canvas.width, canvas.height);
 const tileWidth = 20, tileHeight = 20;
-const snake1 = new _snake.Snake(_player.player.PLAYER1, new _vec2D.Vec2D(0, 6), new _vec2D.Vec2D(1, 6), new _vec2D.Vec2D(2, 6));
-const snake2 = new _snake.Snake(_player.player.PLAYER2, new _vec2D.Vec2D(10, 6), new _vec2D.Vec2D(11, 6), new _vec2D.Vec2D(12, 6));
-const snakes = [snake1, snake2];
-const foods = [new _food.Food(), new _food.Food(), new _food.Food(), new _food.Food()];
-const entities = [...snakes, ...foods];
-entities.forEach(console.log);
+let snakes;
+let powerups;
+let foods;
+let entityLocations = [];
+const snake1 = new _snake.Snake(_player.player.PLAYER1, new _vec2D.Vec2D(40, 6), new _vec2D.Vec2D(51, 6), new _vec2D.Vec2D(52, 6));
+const snake2 = new _snake.Snake(_player.player.PLAYER2, new _vec2D.Vec2D(30, 6), new _vec2D.Vec2D(11, 6), new _vec2D.Vec2D(12, 6));
+snakes = [snake1, snake2];
+powerups = [new _powerup.EatOthers(), new _powerup.Warp()];
+foods = _food.Food.foodArray(30);
+const entities = [...snakes, ...foods, ...powerups];
+entityLocations = [...snakes.flatMap(value => value.snakeParts), ...foods.map(value => value.location), ...powerups.map(value => value.location)];
 function draw() {
   context2D.clearRect(0, 0, canvas.width, canvas.height);
   entities.forEach(entity => entity.draw(context2D));
@@ -491,7 +509,7 @@ function gameLoop(currentTime) {
 }
 window.requestAnimationFrame(gameLoop);
 
-},{"./snake":"6Drdo","./food":"6ULAr","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./player":"5AQdY","./vec2D":"2BBDe"}],"6Drdo":[function(require,module,exports) {
+},{"./snake":"6Drdo","./food":"6ULAr","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./player":"5AQdY","./vec2D":"2BBDe","./powerup":"7EqXP"}],"6Drdo":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 _parcelHelpers.defineInteropFlag(exports);
 _parcelHelpers.export(exports, "Snake", function () {
@@ -502,9 +520,11 @@ var _main = require("./main");
 var _vec2D = require("./vec2D");
 var _input = require("./input");
 var _player = require("./player");
+var _powerup = require("./powerup");
 class Snake {
   speed = 10;
   color = "cyan";
+  activePowerups = [];
   constructor(playerNumber, ...bodyParts) {
     this.playerNumber = playerNumber;
     if (playerNumber == _player.player.PLAYER2) this.color = "red";
@@ -522,17 +542,31 @@ class Snake {
   move() {
     let currentHead = this.snakeParts[0];
     let newHead = new _vec2D.Vec2D(currentHead.x + _input.getDirection(this.playerNumber).x, currentHead.y + _input.getDirection(this.playerNumber).y);
-    const otherSnakes = _main.snakes.filter(snake => snake.playerNumber != this.playerNumber);
-    const overlapOtherSnakes = this.checkOverlapOtherSnakes(otherSnakes, newHead);
-    let overlapOfSelf = this.checkOverlap(newHead);
-    let outBounds = this.checkBounds(newHead);
-    if (outBounds || overlapOfSelf || overlapOtherSnakes) {
-      // @ts-ignore
-      window.location = "/";
+    let hasWarpPowerup = this.activePowerups.some(powerup => powerup instanceof _powerup.Warp);
+    let hasCollided = this.checkCollisions(newHead, hasWarpPowerup);
+    if (hasWarpPowerup) this.warp(newHead);
+    if (hasCollided) {
+      window.location.reload();
       alert(this.color + " loses");
     }
     this.snakeParts.pop();
     this.snakeParts.unshift(newHead);
+  }
+  warp(newHead) {
+    if (this.checkBounds(newHead)) {
+      if (newHead.x < 0) newHead.x = _main.canvasDimension.x / _main.tileWidth;
+      if (newHead.x > _main.canvasDimension.x / _main.tileWidth) newHead.x = 0;
+      if (newHead.y < 0) newHead.y = _main.canvasDimension.y / _main.tileHeight;
+      if (newHead.y > _main.canvasDimension.y / _main.tileHeight) newHead.y = 0;
+    }
+  }
+  checkCollisions(newHead, hasWarpPowerup = false) {
+    const otherSnakes = this.getOtherSnakes();
+    const overlapOtherSnakes = this.checkOverlapOtherSnakes(otherSnakes, newHead);
+    let overlapOfSelf = this.checkOverlap(newHead);
+    let outBounds = hasWarpPowerup ? false : this.checkBounds(newHead);
+    if (outBounds || overlapOfSelf || overlapOtherSnakes) return true;
+    return false;
   }
   checkOverlapOtherSnakes(otherSnakes, newHead) {
     let overlaps = false;
@@ -546,16 +580,33 @@ class Snake {
     return overlap;
   }
   checkBounds(newHead) {
-    let outBounds = newHead.x < 0 || newHead.x > _main.canvasDimension.x / _main.tileWidth || newHead.y < 0 || newHead.y >= _main.canvasDimension.y / _main.tileHeight;
+    let outBounds = newHead.x < 0 || newHead.x >= _main.canvasDimension.x / _main.tileWidth || newHead.y < 0 || newHead.y >= _main.canvasDimension.y / _main.tileHeight;
     return outBounds;
   }
   addSegment() {
     let tail = this.snakeParts[this.snakeParts.length - 1];
     this.snakeParts.push(tail);
   }
+  removeSegmentOthers() {
+    const otherSnakes = this.getOtherSnakes();
+    otherSnakes.forEach(snake => snake.removeSegment());
+  }
+  getOtherSnakes() {
+    return _main.snakes.filter(snake => snake.playerNumber != this.playerNumber);
+  }
+  removeSegment() {
+    this.snakeParts.pop();
+  }
+  eatFood() {
+    this.addSegment();
+    this.speed += 2;
+    if (this.activePowerups.some(powerup => powerup instanceof _powerup.EatOthers)) {
+      this.removeSegmentOthers();
+    }
+  }
 }
 
-},{"./Drawable":"RvnMX","./main":"3fL2n","./input":"5iTXl","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./player":"5AQdY","./vec2D":"2BBDe"}],"RvnMX":[function(require,module,exports) {
+},{"./Drawable":"RvnMX","./main":"3fL2n","./input":"5iTXl","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./player":"5AQdY","./vec2D":"2BBDe","./powerup":"7EqXP"}],"RvnMX":[function(require,module,exports) {
 
 },{}],"5iTXl":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
@@ -700,6 +751,7 @@ _parcelHelpers.defineInteropFlag(exports);
 _parcelHelpers.export(exports, "Vec2D", function () {
   return Vec2D;
 });
+var _main = require("./main");
 class Vec2D {
   constructor(x, y) {
     this.x = x;
@@ -709,9 +761,94 @@ class Vec2D {
     if (other.y === this.y && other.x === this.x) return true;
     return false;
   }
+  setRandomLocation() {
+    let x;
+    let y;
+    let newLocation;
+    do {
+      x = Math.floor(Math.random() * (_main.canvasDimension.x / _main.tileWidth));
+      y = Math.floor(Math.random() * (_main.canvasDimension.y / _main.tileHeight));
+      newLocation = new Vec2D(x, y);
+    } while (_main.entityLocations.some(value => {
+      value.isOn(newLocation);
+    }));
+    this.x = x;
+    this.y = y;
+  }
 }
 
-},{"@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"6ULAr":[function(require,module,exports) {
+},{"@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./main":"3fL2n"}],"7EqXP":[function(require,module,exports) {
+var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
+_parcelHelpers.defineInteropFlag(exports);
+_parcelHelpers.export(exports, "Powerup", function () {
+  return Powerup;
+});
+_parcelHelpers.export(exports, "EatOthers", function () {
+  return EatOthers;
+});
+_parcelHelpers.export(exports, "Warp", function () {
+  return Warp;
+});
+var _vec2D = require("./vec2D");
+var _main = require("./main");
+class Powerup {
+  constructor() {
+    this.location = new _vec2D.Vec2D(0, 0);
+    this.location.setRandomLocation();
+    this.timeLeft = this.time;
+  }
+  draw(gameboard) {
+    if (this.currentOwner === undefined) {
+      gameboard.fillStyle = this.color;
+      gameboard.fillRect(this.location.x * _main.tileWidth, this.location.y * _main.tileHeight, _main.tileWidth, _main.tileHeight);
+    }
+  }
+  update() {
+    // console.log(this.timeLeft)
+    this.timeLeft -= 100;
+    this.checkColissions();
+    if (this.timeLeft < 1) {
+      if (this.currentOwner !== undefined) {
+        console.log(this.currentOwner);
+        this.currentOwner.activePowerups.splice(this.currentOwner.activePowerups.indexOf(this), 1);
+        delete this.currentOwner;
+        console.log(this.currentOwner);
+      }
+      this.location.setRandomLocation();
+      this.timeLeft = this.time;
+    }
+  }
+  checkColissions() {
+    _main.snakes.forEach(snake => {
+      let snakeHead = snake.snakeParts[0];
+      let snakeOnPowerup = snakeHead.isOn(this.location);
+      if (snakeOnPowerup) {
+        this.location.x = null;
+        this.location.y = null;
+        this.currentOwner = snake;
+        snake.activePowerups.push(this);
+      }
+    });
+  }
+}
+class EatOthers extends Powerup {
+  color = "green";
+  time = 10000;
+  constructor() {
+    super();
+    this.timeLeft = this.time;
+  }
+}
+class Warp extends Powerup {
+  color = "pink";
+  time = 10000;
+  constructor() {
+    super();
+    this.timeLeft = this.time;
+  }
+}
+
+},{"./main":"3fL2n","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./vec2D":"2BBDe"}],"6ULAr":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 _parcelHelpers.defineInteropFlag(exports);
 _parcelHelpers.export(exports, "Food", function () {
@@ -722,29 +859,31 @@ var _main = require("./main");
 class Food {
   color = "#fdc601";
   constructor() {
-    this.setRandomLocation();
+    this.location = new _vec2D.Vec2D(0, 0);
+    this.location.setRandomLocation();
+  }
+  static foodArray(amount) {
+    let foodArray = [];
+    for (let i = 0; i < amount; i++) {
+      foodArray.push(new Food());
+    }
+    return foodArray;
   }
   draw(gameboard) {
     gameboard.fillStyle = this.color;
     gameboard.strokeStyle = "black";
-    gameboard.fillRect(this.food.x * _main.tileWidth, this.food.y * _main.tileHeight, _main.tileWidth, _main.tileHeight);
-    gameboard.strokeRect(this.food.x * _main.tileWidth, this.food.y * _main.tileHeight, _main.tileWidth, _main.tileHeight);
+    gameboard.fillRect(this.location.x * _main.tileWidth, this.location.y * _main.tileHeight, _main.tileWidth, _main.tileHeight);
+    gameboard.strokeRect(this.location.x * _main.tileWidth, this.location.y * _main.tileHeight, _main.tileWidth, _main.tileHeight);
   }
   update() {
     _main.snakes.forEach(snake => {
       let snakeHead = snake.snakeParts[0];
-      let snakeOnFood = snakeHead.isOn(this.food);
+      let snakeOnFood = snakeHead.isOn(this.location);
       if (snakeOnFood) {
-        snake.addSegment();
-        snake.speed += 2;
-        this.setRandomLocation();
+        snake.eatFood();
+        this.location.setRandomLocation();
       }
     });
-  }
-  setRandomLocation() {
-    let x = Math.floor(Math.random() * (_main.canvasDimension.x / _main.tileWidth));
-    let y = Math.floor(Math.random() * (_main.canvasDimension.y / _main.tileHeight));
-    this.food = new _vec2D.Vec2D(x, y);
   }
 }
 

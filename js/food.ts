@@ -1,43 +1,47 @@
-import {Vec2D} from "./vec2D";
-import {Drawable} from "./Drawable";
-import {canvasDimension, tileWidth, tileHeight, snakes} from "./main";
-import {Snake} from "./snake";
-import {Entity} from "./entity";
+import {Vec2D} from "./vec2D"
+import {Drawable} from "./Drawable"
+import {canvasDimension, tileWidth, tileHeight, snakes} from "./main"
+import {Snake} from "./snake"
+import {Entity} from "./entity"
 
 export class Food implements Entity {
-    food: Vec2D
-    color = "#fdc601";
+    location: Vec2D
+    color = "#fdc601"
 
     constructor() {
-        this.setRandomLocation()
+        this.location = new Vec2D(0,0)
+        this.location.setRandomLocation()
+    }
+
+    static foodArray(amount: number): Food[] {
+        let foodArray: Food[] = []
+        for (let i = 0; i < amount; i++) {
+            foodArray.push(new Food())
+        }
+        return foodArray
     }
 
     draw(gameboard: CanvasRenderingContext2D) {
         gameboard.fillStyle = this.color
         gameboard.strokeStyle = "black"
-        gameboard.fillRect(this.food.x * tileWidth, this.food.y * tileHeight, tileWidth, tileHeight)
-        gameboard.strokeRect(this.food.x * tileWidth, this.food.y * tileHeight, tileWidth, tileHeight)
+        gameboard.fillRect(this.location.x * tileWidth, this.location.y * tileHeight, tileWidth, tileHeight)
+        gameboard.strokeRect(this.location.x * tileWidth, this.location.y * tileHeight, tileWidth, tileHeight)
     }
 
     update() {
 
         snakes.forEach(snake => {
             let snakeHead = snake.snakeParts[0]
-            let snakeOnFood = snakeHead.isOn(this.food)
+            let snakeOnFood = snakeHead.isOn(this.location)
             if (snakeOnFood) {
-                snake.addSegment()
-                snake.speed += 2
-                this.setRandomLocation()
+                snake.eatFood()
+                this.location.setRandomLocation()
             }
-        });
+        })
 
     }
 
-    setRandomLocation() {
-        let x = Math.floor(Math.random() * (canvasDimension.x / tileWidth));
-        let y = Math.floor(Math.random() * (canvasDimension.y / tileHeight));
-        this.food = new Vec2D(x,y)
-    }
+
 
 }
 
