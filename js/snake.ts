@@ -93,7 +93,13 @@ export class Snake implements Entity {
 
     private removeSegmentOthers() {
         const otherSnakes: Snake[] = this.getOtherSnakes()
-        otherSnakes.forEach(snake => snake.removeSegment())
+        otherSnakes.forEach(snake => {
+            snake.removeSegment()
+            if (snake.snakeParts.length == 0) {
+                window.location.reload()
+                alert(snake.color + " loses")
+            }
+        })
     }
 
     private getOtherSnakes() {

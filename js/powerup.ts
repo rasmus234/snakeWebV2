@@ -20,6 +20,8 @@ export class Powerup implements Entity {
     draw(gameboard: CanvasRenderingContext2D): void {
         if (this.currentOwner === undefined) {
             gameboard.fillStyle = this.color
+            gameboard.strokeStyle = "black"
+            gameboard.strokeRect(this.location.x * tileWidth, this.location.y * tileHeight, tileWidth, tileHeight)
             gameboard.fillRect(this.location.x * tileWidth, this.location.y * tileHeight, tileWidth, tileHeight)
         }
     }
@@ -48,7 +50,7 @@ export class Powerup implements Entity {
             if (snakeOnPowerup) {
                 this.location.x = null
                 this.location.y = null
-                    this.currentOwner = snake
+                this.currentOwner = snake
                 snake.activePowerups.push(this)
             }
         })

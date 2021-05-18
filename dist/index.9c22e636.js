@@ -494,6 +494,16 @@ entityLocations = [...snakes.flatMap(value => value.snakeParts), ...foods.map(va
 function draw() {
   context2D.clearRect(0, 0, canvas.width, canvas.height);
   entities.forEach(entity => entity.draw(context2D));
+  // draw canvas outline of snake holding Warp powerup
+  snakes.forEach(value => {
+    if (value.activePowerups.some(powerup => powerup instanceof _powerup.Warp)) {
+      let currentPowerup = value.activePowerups.find(value1 => value1 instanceof _powerup.Warp);
+      context2D.strokeStyle = value.color;
+      context2D.lineWidth = currentPowerup.timeLeft / 500;
+      context2D.strokeRect(0, 0, canvas.width, canvas.height);
+      context2D.lineWidth = 1;
+    }
+  });
 }
 function tick() {
   entities.forEach(entity => entity.update());
@@ -589,7 +599,13 @@ class Snake {
   }
   removeSegmentOthers() {
     const otherSnakes = this.getOtherSnakes();
-    otherSnakes.forEach(snake => snake.removeSegment());
+    otherSnakes.forEach(snake => {
+      snake.removeSegment();
+      if (snake.snakeParts.length == 0) {
+        window.location.reload();
+        alert(snake.color + " loses");
+      }
+    });
   }
   getOtherSnakes() {
     return _main.snakes.filter(snake => snake.playerNumber != this.playerNumber);
@@ -800,6 +816,8 @@ class Powerup {
   draw(gameboard) {
     if (this.currentOwner === undefined) {
       gameboard.fillStyle = this.color;
+      gameboard.strokeStyle = "black";
+      gameboard.strokeRect(this.location.x * _main.tileWidth, this.location.y * _main.tileHeight, _main.tileWidth, _main.tileHeight);
       gameboard.fillRect(this.location.x * _main.tileWidth, this.location.y * _main.tileHeight, _main.tileWidth, _main.tileHeight);
     }
   }
@@ -871,6 +889,7 @@ class Food {
   }
   draw(gameboard) {
     gameboard.fillStyle = this.color;
+    gameboard.lineWidth = 1;
     gameboard.strokeStyle = "black";
     gameboard.fillRect(this.location.x * _main.tileWidth, this.location.y * _main.tileHeight, _main.tileWidth, _main.tileHeight);
     gameboard.strokeRect(this.location.x * _main.tileWidth, this.location.y * _main.tileHeight, _main.tileWidth, _main.tileHeight);

@@ -36,6 +36,19 @@ entityLocations =  [
 function draw() {
     context2D.clearRect(0, 0, canvas.width, canvas.height)
     entities.forEach(entity => entity.draw(context2D))
+
+    //draw canvas outline of snake holding Warp powerup
+    snakes.forEach(value => {
+        if (value.activePowerups.some(powerup => powerup instanceof Warp)) {
+            let currentPowerup: Warp = value.activePowerups.find(value1 => value1 instanceof Warp)
+            context2D.strokeStyle = value.color
+            context2D.lineWidth = currentPowerup.timeLeft/500
+            context2D.strokeRect(0,0,canvas.width,canvas.height)
+            context2D.lineWidth = 1
+        }
+    })
+
+
 }
 
 function tick() {
