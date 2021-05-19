@@ -7,8 +7,7 @@ import {Entity} from "./entity"
 import {EatOthers, Powerup, Warp} from "./powerup"
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement
-const context2D: CanvasRenderingContext2D = canvas.getContext("2d")
-
+const gameboard: CanvasRenderingContext2D = canvas.getContext("2d")
 
 const size: number = 1600
 canvas.width = size
@@ -27,26 +26,17 @@ const snake2: Snake = new Snake(player.PLAYER2, new Vec2D(30, 6), new Vec2D(11, 
  powerups = [new EatOthers(),new Warp()]
  foods = Food.foodArray(30)
 export const entities: Entity[] = [...snakes, ...foods,...powerups]
-entityLocations =  [
+entityLocations = [
     ...snakes.flatMap(value => value.snakeParts),
     ...foods.map(value => value.location),
     ...powerups.map(value => value.location)]
 
 
 function draw() {
-    context2D.clearRect(0, 0, canvas.width, canvas.height)
-    entities.forEach(entity => entity.draw(context2D))
-
-    //draw canvas outline of snake holding Warp powerup
-    snakes.forEach(value => {
-        if (value.activePowerups.some(powerup => powerup instanceof Warp)) {
-            let currentPowerup: Warp = value.activePowerups.find(value1 => value1 instanceof Warp)
-            context2D.strokeStyle = value.color
-            context2D.lineWidth = currentPowerup.timeLeft/500
-            context2D.strokeRect(0,0,canvas.width,canvas.height)
-            context2D.lineWidth = 1
-        }
-    })
+    gameboard.clearRect(0, 0, canvas.width, canvas.height)
+    drawBoardGrid()
+    entities.forEach(entity => entity.draw(gameboard))
+    handleWarpPowerup()
 
 
 }
@@ -58,6 +48,7 @@ function tick() {
 
 let prevRenderTime: number
 
+
 function gameLoop(currentTime: number) {
     window.requestAnimationFrame(gameLoop)
     const difference = (currentTime - prevRenderTime) / 1000
@@ -65,9 +56,32 @@ function gameLoop(currentTime: number) {
     prevRenderTime = currentTime
     tick()
 }
+function drawBoardGrid() {
+    for (let i = 0; i < canvasDimension.y / tileHeight; i++) {
+        const offset = i % 2 == 0 ? 0 : 1
+        for (let j = 0; j < canvasDimension.x / tileWidth; j++) {
+            gameboard.fillStyle = j % 2 == offset ? "#c2c2c2" : "#ccc"
+            gameboard.fillRect(j * tileWidth, i * tileHeight, tileWidth, tileHeight)
+        }
+    }
+}
+
+
+function handleWarpPowerup() {
+    //draw canvas outline of snake holding Warp powerup
+    snakes.forEach(value => {
+        if (value.activePowerups.some(powerup => powerup instanceof Warp)) {
+            let currentPowerup: Warp = value.activePowerups.find(value1 => value1 instanceof Warp)
+            gameboard.strokeStyle = value.color
+            gameboard.lineWidth = currentPowerup.timeLeft / 500
+            gameboard.strokeRect(0, 0, canvas.width, canvas.height)
+            gameboard.lineWidth = 1
+        }
+    })
+}
+
 
 window.requestAnimationFrame(gameLoop)
-
 
 
 

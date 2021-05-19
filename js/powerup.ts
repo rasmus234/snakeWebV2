@@ -21,8 +21,10 @@ export class Powerup implements Entity {
         if (this.currentOwner === undefined) {
             gameboard.fillStyle = this.color
             gameboard.strokeStyle = "black"
+            gameboard.globalAlpha = this.timeLeft/this.time
             gameboard.strokeRect(this.location.x * tileWidth, this.location.y * tileHeight, tileWidth, tileHeight)
             gameboard.fillRect(this.location.x * tileWidth, this.location.y * tileHeight, tileWidth, tileHeight)
+            gameboard.globalAlpha = 1
         }
     }
 
@@ -51,7 +53,7 @@ export class Powerup implements Entity {
                 this.location.x = null
                 this.location.y = null
                 this.currentOwner = snake
-                snake.activePowerups.push(this)
+                snake.activePowerups.unshift(this)
             }
         })
     }
@@ -71,6 +73,14 @@ export class Warp extends Powerup {
     color = "pink"
     time = 10000
 
+    constructor() {
+        super()
+        this.timeLeft = this.time
+    }
+}
+export class Teleport extends Powerup{
+    color = "black"
+    time = Infinity
     constructor() {
         super()
         this.timeLeft = this.time

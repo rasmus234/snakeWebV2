@@ -26,6 +26,7 @@ export class Snake implements Entity {
 
         gameboard.fillStyle = this.color
         gameboard.strokeStyle = "black"
+        gameboard.lineWidth = 2
         this.snakeParts.forEach(part => gameboard.strokeRect(part.x * tileWidth, part.y * tileHeight, tileWidth, tileHeight))
         this.snakeParts.forEach(part => gameboard.fillRect(part.x * tileWidth, part.y * tileHeight, tileWidth, tileHeight))
     }

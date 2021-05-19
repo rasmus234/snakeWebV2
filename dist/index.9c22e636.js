@@ -474,7 +474,7 @@ var _vec2D = require("./vec2D");
 var _player = require("./player");
 var _powerup = require("./powerup");
 const canvas = document.getElementById("canvas");
-const context2D = canvas.getContext("2d");
+const gameboard = canvas.getContext("2d");
 const size = 1600;
 canvas.width = size;
 canvas.height = size / 2;
@@ -492,18 +492,10 @@ foods = _food.Food.foodArray(30);
 const entities = [...snakes, ...foods, ...powerups];
 entityLocations = [...snakes.flatMap(value => value.snakeParts), ...foods.map(value => value.location), ...powerups.map(value => value.location)];
 function draw() {
-  context2D.clearRect(0, 0, canvas.width, canvas.height);
-  entities.forEach(entity => entity.draw(context2D));
-  // draw canvas outline of snake holding Warp powerup
-  snakes.forEach(value => {
-    if (value.activePowerups.some(powerup => powerup instanceof _powerup.Warp)) {
-      let currentPowerup = value.activePowerups.find(value1 => value1 instanceof _powerup.Warp);
-      context2D.strokeStyle = value.color;
-      context2D.lineWidth = currentPowerup.timeLeft / 500;
-      context2D.strokeRect(0, 0, canvas.width, canvas.height);
-      context2D.lineWidth = 1;
-    }
-  });
+  gameboard.clearRect(0, 0, canvas.width, canvas.height);
+  drawBoardGrid();
+  entities.forEach(entity => entity.draw(gameboard));
+  handleWarpPowerup();
 }
 function tick() {
   entities.forEach(entity => entity.update());
@@ -516,6 +508,27 @@ function gameLoop(currentTime) {
   if (difference < 1 / snake1.speed) return;
   prevRenderTime = currentTime;
   tick();
+}
+function drawBoardGrid() {
+  for (let i = 0; i < canvasDimension.y / tileHeight; i++) {
+    const offset = i % 2 == 0 ? 0 : 1;
+    for (let j = 0; j < canvasDimension.x / tileWidth; j++) {
+      gameboard.fillStyle = j % 2 == offset ? "#c2c2c2" : "#ccc";
+      gameboard.fillRect(j * tileWidth, i * tileHeight, tileWidth, tileHeight);
+    }
+  }
+}
+function handleWarpPowerup() {
+  // draw canvas outline of snake holding Warp powerup
+  snakes.forEach(value => {
+    if (value.activePowerups.some(powerup => powerup instanceof _powerup.Warp)) {
+      let currentPowerup = value.activePowerups.find(value1 => value1 instanceof _powerup.Warp);
+      gameboard.strokeStyle = value.color;
+      gameboard.lineWidth = currentPowerup.timeLeft / 500;
+      gameboard.strokeRect(0, 0, canvas.width, canvas.height);
+      gameboard.lineWidth = 1;
+    }
+  });
 }
 window.requestAnimationFrame(gameLoop);
 
@@ -543,6 +556,7 @@ class Snake {
   draw(gameboard) {
     gameboard.fillStyle = this.color;
     gameboard.strokeStyle = "black";
+    gameboard.lineWidth = 2;
     this.snakeParts.forEach(part => gameboard.strokeRect(part.x * _main.tileWidth, part.y * _main.tileHeight, _main.tileWidth, _main.tileHeight));
     this.snakeParts.forEach(part => gameboard.fillRect(part.x * _main.tileWidth, part.y * _main.tileHeight, _main.tileWidth, _main.tileHeight));
   }
@@ -805,6 +819,9 @@ _parcelHelpers.export(exports, "EatOthers", function () {
 _parcelHelpers.export(exports, "Warp", function () {
   return Warp;
 });
+_parcelHelpers.export(exports, "Teleport", function () {
+  return Teleport;
+});
 var _vec2D = require("./vec2D");
 var _main = require("./main");
 class Powerup {
@@ -817,8 +834,10 @@ class Powerup {
     if (this.currentOwner === undefined) {
       gameboard.fillStyle = this.color;
       gameboard.strokeStyle = "black";
+      gameboard.globalAlpha = this.timeLeft / this.time;
       gameboard.strokeRect(this.location.x * _main.tileWidth, this.location.y * _main.tileHeight, _main.tileWidth, _main.tileHeight);
       gameboard.fillRect(this.location.x * _main.tileWidth, this.location.y * _main.tileHeight, _main.tileWidth, _main.tileHeight);
+      gameboard.globalAlpha = 1;
     }
   }
   update() {
@@ -844,7 +863,7 @@ class Powerup {
         this.location.x = null;
         this.location.y = null;
         this.currentOwner = snake;
-        snake.activePowerups.push(this);
+        snake.activePowerups.unshift(this);
       }
     });
   }
@@ -860,6 +879,14 @@ class EatOthers extends Powerup {
 class Warp extends Powerup {
   color = "pink";
   time = 10000;
+  constructor() {
+    super();
+    this.timeLeft = this.time;
+  }
+}
+class Teleport extends Powerup {
+  color = "black";
+  time = Infinity;
   constructor() {
     super();
     this.timeLeft = this.time;
