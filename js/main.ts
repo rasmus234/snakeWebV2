@@ -20,26 +20,35 @@ export let snakes: Snake[]
 export let powerups: Powerup[]
 export let foods: Food[]
 export let entityLocations: Vec2D[] = []
+let snake1: Snake
+let snake2: Snake
+export let entities
 
-const snake1: Snake = new Snake(player.PLAYER1, new Vec2D(40, 6), new Vec2D(51, 6), new Vec2D(52, 6))
-const snake2: Snake = new Snake(player.PLAYER2, new Vec2D(30, 6), new Vec2D(11, 6), new Vec2D(12, 6))
- snakes = [snake1, snake2]
- powerups = [new EatOthers(),new Warp()]
- foods = Food.foodArray(30)
-export const entities: Entity[] = [...snakes, ...foods,...powerups]
-entityLocations = [
-    ...snakes.flatMap(value => value.snakeParts),
-    ...foods.map(value => value.location),
-    ...powerups.map(value => value.location)]
+startScreen()
+function initVariables(players: number)
+{
+    snake1 = new Snake(player.PLAYER1, new Vec2D(40, 6), new Vec2D(51, 6), new Vec2D(52, 6))
+    snakes = [snake1]
+    if (players == 2) {
+        snake2 = new Snake(player.PLAYER2, new Vec2D(30, 6), new Vec2D(11, 6), new Vec2D(12, 6))
+        snakes.push(snake2)
+    }
 
+    powerups = [new EatOthers(), new Warp()]
+    foods = Food.foodArray(30)
+    entities = [...snakes, ...foods, ...powerups]
+    entityLocations = [
+        ...snakes.flatMap(value => value.snakeParts),
+        ...foods.map(value => value.location),
+        ...powerups.map(value => value.location)]
+    window.requestAnimationFrame(gameLoop)
+}
 
 function draw() {
     gameboard.clearRect(0, 0, canvas.width, canvas.height)
     drawBoardGrid()
     entities.forEach(entity => entity.draw(gameboard))
     handleWarpPowerup()
-
-
 }
 
 function tick() {
@@ -57,6 +66,7 @@ function gameLoop(currentTime: number) {
     prevRenderTime = currentTime
     tick()
 }
+
 function drawBoardGrid() {
     for (let i = 0; i < canvasDimension.y / tileHeight; i++) {
         const offset = i % 2 == 0 ? 0 : 1
@@ -80,9 +90,57 @@ function handleWarpPowerup() {
         }
     })
 }
+let startScreenActive = true;
+function startScreen() : any {
+    let activeButton: number = 1
+    gameboard.fillStyle = "black"
+    gameboard.lineWidth = 2
+    gameboard.strokeStyle = "green"
+    const button1: Vec2D = new Vec2D(canvasDimension.x / 2 - 100, canvasDimension.y / 2)
+    const button2: Vec2D = new Vec2D(canvasDimension.x / 2, canvasDimension.y / 2)
+    gameboard.fillRect(button1.x, button1.y, 60, 50)
+    gameboard.strokeRect(button1.x, button1.y, 60, 50)
+    gameboard.fillRect(button2.x, button2.y, 60, 50)
+    gameboard.fillStyle = "white"
+    gameboard.font = "25px Ariel"
+    gameboard.fillText("1", button1.x + 25, button1.y + 30)
+    gameboard.fillText("2", button2.x + 25, button2.y + 30)
+
+    window.addEventListener( "keydown", ev => {
+        if (startScreenActive == false) return
+
+        if (ev.key == "ArrowLeft" || ev.key == "ArrowRight") {
+            gameboard.fillStyle = "black"
+            if (ev.key == "ArrowRight") {
+                gameboard.strokeStyle = "#ccc"
+                activeButton = 2
+            } else gameboard.strokeStyle = "green"
+            gameboard.fillRect(button1.x, button1.y, 60, 50)
+            gameboard.strokeRect(button1.x, button1.y, 60, 50)
+            gameboard.fillStyle = "white"
+            gameboard.fillText("1", button1.x + 25, button1.y + 30)
 
 
-window.requestAnimationFrame(gameLoop)
+            if (ev.key == "ArrowLeft") {
+                gameboard.strokeStyle = "#ccc"
+                activeButton = 1
+            } else gameboard.strokeStyle = "green"
+            gameboard.fillStyle = "black"
+            gameboard.fillRect(button2.x, button2.y, 60, 50)
+            gameboard.strokeRect(button2.x, button2.y, 60, 50)
+            gameboard.fillStyle = "white"
+            gameboard.fillText("2", button2.x + 25, button2.y + 30)
+        }
+        if (ev.key == "Enter"){
+            startScreenActive = false
+            initVariables(activeButton)
+        }
+    })
+
+}
+
+
+// window.requestAnimationFrame(gameLoop)
 
 
 

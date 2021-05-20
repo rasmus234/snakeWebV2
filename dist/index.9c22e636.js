@@ -484,13 +484,23 @@ let snakes;
 let powerups;
 let foods;
 let entityLocations = [];
-const snake1 = new _snake.Snake(_player.player.PLAYER1, new _vec2D.Vec2D(40, 6), new _vec2D.Vec2D(51, 6), new _vec2D.Vec2D(52, 6));
-const snake2 = new _snake.Snake(_player.player.PLAYER2, new _vec2D.Vec2D(30, 6), new _vec2D.Vec2D(11, 6), new _vec2D.Vec2D(12, 6));
-snakes = [snake1, snake2];
-powerups = [new _powerup.EatOthers(), new _powerup.Warp()];
-foods = _food.Food.foodArray(30);
-const entities = [...snakes, ...foods, ...powerups];
-entityLocations = [...snakes.flatMap(value => value.snakeParts), ...foods.map(value => value.location), ...powerups.map(value => value.location)];
+let snake1;
+let snake2;
+let entities;
+startScreen();
+function initVariables(players) {
+  snake1 = new _snake.Snake(_player.player.PLAYER1, new _vec2D.Vec2D(40, 6), new _vec2D.Vec2D(51, 6), new _vec2D.Vec2D(52, 6));
+  snakes = [snake1];
+  if (players == 2) {
+    snake2 = new _snake.Snake(_player.player.PLAYER2, new _vec2D.Vec2D(30, 6), new _vec2D.Vec2D(11, 6), new _vec2D.Vec2D(12, 6));
+    snakes.push(snake2);
+  }
+  powerups = [new _powerup.EatOthers(), new _powerup.Warp()];
+  foods = _food.Food.foodArray(30);
+  entities = [...snakes, ...foods, ...powerups];
+  entityLocations = [...snakes.flatMap(value => value.snakeParts), ...foods.map(value => value.location), ...powerups.map(value => value.location)];
+  window.requestAnimationFrame(gameLoop);
+}
 function draw() {
   gameboard.clearRect(0, 0, canvas.width, canvas.height);
   drawBoardGrid();
@@ -530,7 +540,49 @@ function handleWarpPowerup() {
     }
   });
 }
-window.requestAnimationFrame(gameLoop);
+let startScreenActive = true;
+function startScreen() {
+  let activeButton = 1;
+  gameboard.fillStyle = "black";
+  gameboard.lineWidth = 2;
+  gameboard.strokeStyle = "green";
+  const button1 = new _vec2D.Vec2D(canvasDimension.x / 2 - 100, canvasDimension.y / 2);
+  const button2 = new _vec2D.Vec2D(canvasDimension.x / 2, canvasDimension.y / 2);
+  gameboard.fillRect(button1.x, button1.y, 60, 50);
+  gameboard.strokeRect(button1.x, button1.y, 60, 50);
+  gameboard.fillRect(button2.x, button2.y, 60, 50);
+  gameboard.fillStyle = "white";
+  gameboard.font = "25px Ariel";
+  gameboard.fillText("1", button1.x + 25, button1.y + 30);
+  gameboard.fillText("2", button2.x + 25, button2.y + 30);
+  window.addEventListener("keydown", ev => {
+    if (startScreenActive == false) return;
+    if (ev.key == "ArrowLeft" || ev.key == "ArrowRight") {
+      gameboard.fillStyle = "black";
+      if (ev.key == "ArrowRight") {
+        gameboard.strokeStyle = "#ccc";
+        activeButton = 2;
+      } else gameboard.strokeStyle = "green";
+      gameboard.fillRect(button1.x, button1.y, 60, 50);
+      gameboard.strokeRect(button1.x, button1.y, 60, 50);
+      gameboard.fillStyle = "white";
+      gameboard.fillText("1", button1.x + 25, button1.y + 30);
+      if (ev.key == "ArrowLeft") {
+        gameboard.strokeStyle = "#ccc";
+        activeButton = 1;
+      } else gameboard.strokeStyle = "green";
+      gameboard.fillStyle = "black";
+      gameboard.fillRect(button2.x, button2.y, 60, 50);
+      gameboard.strokeRect(button2.x, button2.y, 60, 50);
+      gameboard.fillStyle = "white";
+      gameboard.fillText("2", button2.x + 25, button2.y + 30);
+    }
+    if (ev.key == "Enter") {
+      startScreenActive = false;
+      initVariables(activeButton);
+    }
+  });
+}
 
 },{"./snake":"6Drdo","./food":"6ULAr","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./player":"5AQdY","./vec2D":"2BBDe","./powerup":"7EqXP"}],"6Drdo":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
