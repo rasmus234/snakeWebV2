@@ -916,7 +916,7 @@ class Food {
   }
   draw(gameboard) {
     gameboard.fillStyle = this.color;
-    gameboard.lineWidth = 1;
+    gameboard.lineWidth = 0.5;
     gameboard.strokeStyle = "black";
     gameboard.fillRect(this.location.x * _main.tileWidth, this.location.y * _main.tileHeight, _main.tileWidth, _main.tileHeight);
     gameboard.strokeRect(this.location.x * _main.tileWidth, this.location.y * _main.tileHeight, _main.tileWidth, _main.tileHeight);

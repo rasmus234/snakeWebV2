@@ -4,6 +4,7 @@ import {canvasDimension, tileWidth, tileHeight, snakes} from "./main"
 import {Snake} from "./snake"
 import {Entity} from "./entity"
 import {Warp} from "./powerup"
+import {Image, ImageData} from "canvas"
 
 export class Food implements Entity {
     location: Vec2D
@@ -12,6 +13,7 @@ export class Food implements Entity {
     constructor() {
         this.location = new Vec2D(0,0)
         this.location.setRandomLocation()
+
     }
 
     static foodArray(amount: number): Food[] {
@@ -24,7 +26,7 @@ export class Food implements Entity {
 
     draw(gameboard: CanvasRenderingContext2D) {
         gameboard.fillStyle = this.color
-        gameboard.lineWidth = 1
+        gameboard.lineWidth = 0.5
         gameboard.strokeStyle = "black"
         gameboard.fillRect(this.location.x * tileWidth, this.location.y * tileHeight, tileWidth, tileHeight)
         gameboard.strokeRect(this.location.x * tileWidth, this.location.y * tileHeight, tileWidth, tileHeight)

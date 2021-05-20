@@ -45,7 +45,7 @@ window.addEventListener("keydown", ev => {
   }
 })
 
-export function getDirection(playerNumber: player) {
+export function getDirection(playerNumber: player) : Vec2D{
   lastDirection1 = direction1
   lastDirection2 = direction2
   if (playerNumber == player.PLAYER1) return direction1

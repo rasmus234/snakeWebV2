@@ -5,6 +5,7 @@ import {Drawable} from "./Drawable"
 import {player} from "./player"
 import {Entity} from "./entity"
 import {EatOthers, Powerup, Warp} from "./powerup"
+import {Image} from "canvas"
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement
 const gameboard: CanvasRenderingContext2D = canvas.getContext("2d")
