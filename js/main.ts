@@ -1,3 +1,4 @@
+import {getScores, sendScore} from "./db"
 import {Snake} from "./snake"
 import {Food} from "./food"
 import {Vec2D} from "./vec2D"
@@ -34,7 +35,11 @@ function initVariables(players: number)
         snakes.push(snake2)
     }
 
-    powerups = [new EatOthers(), new Warp()]
+    powerups = [new Warp()]
+    if (players == 2){
+        powerups.push(new EatOthers())
+    }
+
     foods = Food.foodArray(30)
     entities = [...snakes, ...foods, ...powerups]
     entityLocations = [
@@ -91,7 +96,10 @@ function handleWarpPowerup() {
     })
 }
 let startScreenActive = true;
-function startScreen() : any {
+async function startScreen(): Promise<any> {
+    const scores = await getScores()
+    console.log(scores)
+
     let activeButton: number = 1
     gameboard.fillStyle = "black"
     gameboard.lineWidth = 2
@@ -106,7 +114,7 @@ function startScreen() : any {
     gameboard.fillText("1", button1.x + 25, button1.y + 30)
     gameboard.fillText("2", button2.x + 25, button2.y + 30)
 
-    window.addEventListener( "keydown", ev => {
+    window.addEventListener("keydown", ev => {
         if (startScreenActive == false) return
 
         if (ev.key == "ArrowLeft" || ev.key == "ArrowRight") {
@@ -131,16 +139,13 @@ function startScreen() : any {
             gameboard.fillStyle = "white"
             gameboard.fillText("2", button2.x + 25, button2.y + 30)
         }
-        if (ev.key == "Enter"){
+        if (ev.key == "Enter") {
             startScreenActive = false
             initVariables(activeButton)
         }
     })
 
 }
-
-
-// window.requestAnimationFrame(gameLoop)
 
 
 

@@ -6,6 +6,7 @@ import {Drawable} from "./Drawable"
 import {player} from "./player"
 import {Entity} from "./entity"
 import {EatOthers, Powerup, Warp} from "./powerup"
+import {sendScore} from "./db"
 
 
 export class Snake implements Entity {
@@ -36,19 +37,28 @@ export class Snake implements Entity {
         this.move()
     }
 
-    private move(): void {
+    private move() {
         let currentHead: Vec2D = this.snakeParts[0]
         let newHead: Vec2D = new Vec2D(currentHead.x + getDirection(this.playerNumber).x, currentHead.y + getDirection(this.playerNumber).y)
         let hasWarpPowerup = this.activePowerups.some(powerup => powerup instanceof Warp)
-        let hasCollided = this.checkCollisions(newHead,hasWarpPowerup)
+        let hasCollided = this.checkCollisions(newHead, hasWarpPowerup)
         if (hasWarpPowerup) this.warp(newHead)
 
         if (hasCollided) {
-            window.location.reload()
-            alert(this.color + " loses")
+            this.kill()
+
         }
         this.snakeParts.pop()
         this.snakeParts.unshift(newHead)
+    }
+
+    private async kill() {
+        await sendScore("Ralle", this.snakeParts.length).then(res => {
+            console.log(res)
+        }).catch(reason => console.log(reason))
+
+        window.location.reload()
+        alert(this.color + " loses")
     }
 
     private warp(newHead: Vec2D) {
@@ -97,8 +107,7 @@ export class Snake implements Entity {
         otherSnakes.forEach(snake => {
             snake.removeSegment()
             if (snake.snakeParts.length == 0) {
-                window.location.reload()
-                alert(snake.color + " loses")
+                snake.kill()
             }
         })
     }
@@ -114,7 +123,7 @@ export class Snake implements Entity {
     public eatFood() {
 
         this.addSegment()
-        this.speed += 2
+        this.speed += 1.5
         if (this.activePowerups.some(powerup => powerup instanceof EatOthers)) {
             this.removeSegmentOthers()
         }

@@ -468,6 +468,7 @@ _parcelHelpers.export(exports, "entityLocations", function () {
 _parcelHelpers.export(exports, "entities", function () {
   return entities;
 });
+var _db = require("./db");
 var _snake = require("./snake");
 var _food = require("./food");
 var _vec2D = require("./vec2D");
@@ -495,7 +496,10 @@ function initVariables(players) {
     snake2 = new _snake.Snake(_player.player.PLAYER2, new _vec2D.Vec2D(30, 6), new _vec2D.Vec2D(11, 6), new _vec2D.Vec2D(12, 6));
     snakes.push(snake2);
   }
-  powerups = [new _powerup.EatOthers(), new _powerup.Warp()];
+  powerups = [new _powerup.Warp()];
+  if (players == 2) {
+    powerups.push(new _powerup.EatOthers());
+  }
   foods = _food.Food.foodArray(30);
   entities = [...snakes, ...foods, ...powerups];
   entityLocations = [...snakes.flatMap(value => value.snakeParts), ...foods.map(value => value.location), ...powerups.map(value => value.location)];
@@ -541,7 +545,9 @@ function handleWarpPowerup() {
   });
 }
 let startScreenActive = true;
-function startScreen() {
+async function startScreen() {
+  const scores = await _db.getScores();
+  console.log(scores);
   let activeButton = 1;
   gameboard.fillStyle = "black";
   gameboard.lineWidth = 2;
@@ -584,7 +590,7 @@ function startScreen() {
   });
 }
 
-},{"./snake":"6Drdo","./food":"6ULAr","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./player":"5AQdY","./vec2D":"2BBDe","./powerup":"7EqXP"}],"6Drdo":[function(require,module,exports) {
+},{"./snake":"6Drdo","./food":"6ULAr","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./player":"5AQdY","./vec2D":"2BBDe","./powerup":"7EqXP","./db":"1e1pv"}],"6Drdo":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 _parcelHelpers.defineInteropFlag(exports);
 _parcelHelpers.export(exports, "Snake", function () {
@@ -596,6 +602,7 @@ var _vec2D = require("./vec2D");
 var _input = require("./input");
 var _player = require("./player");
 var _powerup = require("./powerup");
+var _db = require("./db");
 class Snake {
   speed = 10;
   color = "cyan";
@@ -622,11 +629,17 @@ class Snake {
     let hasCollided = this.checkCollisions(newHead, hasWarpPowerup);
     if (hasWarpPowerup) this.warp(newHead);
     if (hasCollided) {
-      window.location.reload();
-      alert(this.color + " loses");
+      this.kill();
     }
     this.snakeParts.pop();
     this.snakeParts.unshift(newHead);
+  }
+  async kill() {
+    await _db.sendScore("Ralle", this.snakeParts.length).then(res => {
+      console.log(res);
+    }).catch(reason => console.log(reason));
+    window.location.reload();
+    alert(this.color + " loses");
   }
   warp(newHead) {
     if (this.checkBounds(newHead)) {
@@ -668,8 +681,7 @@ class Snake {
     otherSnakes.forEach(snake => {
       snake.removeSegment();
       if (snake.snakeParts.length == 0) {
-        window.location.reload();
-        alert(snake.color + " loses");
+        snake.kill();
       }
     });
   }
@@ -681,14 +693,14 @@ class Snake {
   }
   eatFood() {
     this.addSegment();
-    this.speed += 2;
+    this.speed += 1.5;
     if (this.activePowerups.some(powerup => powerup instanceof _powerup.EatOthers)) {
       this.removeSegmentOthers();
     }
   }
 }
 
-},{"./Drawable":"RvnMX","./main":"3fL2n","./input":"5iTXl","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./player":"5AQdY","./vec2D":"2BBDe","./powerup":"7EqXP"}],"RvnMX":[function(require,module,exports) {
+},{"./Drawable":"RvnMX","./main":"3fL2n","./input":"5iTXl","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./player":"5AQdY","./vec2D":"2BBDe","./powerup":"7EqXP","./db":"1e1pv"}],"RvnMX":[function(require,module,exports) {
 
 },{}],"5iTXl":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
@@ -945,7 +957,49 @@ class Teleport extends Powerup {
   }
 }
 
-},{"./main":"3fL2n","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./vec2D":"2BBDe"}],"6ULAr":[function(require,module,exports) {
+},{"./main":"3fL2n","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./vec2D":"2BBDe"}],"1e1pv":[function(require,module,exports) {
+var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
+_parcelHelpers.defineInteropFlag(exports);
+_parcelHelpers.export(exports, "sendScore", function () {
+  return sendScore;
+});
+_parcelHelpers.export(exports, "getScores", function () {
+  return getScores;
+});
+async function sendScore(username, score) {
+  try {
+    if (username && score) {
+      await fetch("http://localhost:3000/scores", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json"
+        },
+        "body": JSON.stringify({
+          username: username,
+          score: score
+        })
+      }).then(res => console.log(res));
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+async function getScores() {
+  let scores;
+  try {
+    await fetch("http://localhost:3000/scores", {
+      method: "GET",
+      headers: {
+        "content-type": "application/json"
+      }
+    }).then(res => res.json()).then(data => scores = data);
+  } catch (e) {
+    console.log(e);
+  }
+  return scores;
+}
+
+},{"@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"6ULAr":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 _parcelHelpers.defineInteropFlag(exports);
 _parcelHelpers.export(exports, "Food", function () {
