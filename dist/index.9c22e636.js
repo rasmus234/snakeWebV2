@@ -468,6 +468,15 @@ _parcelHelpers.export(exports, "entityLocations", function () {
 _parcelHelpers.export(exports, "entities", function () {
   return entities;
 });
+_parcelHelpers.export(exports, "username", function () {
+  return username;
+});
+_parcelHelpers.export(exports, "currentFrame", function () {
+  return currentFrame;
+});
+_parcelHelpers.export(exports, "startScreen", function () {
+  return startScreen;
+});
 var _db = require("./db");
 var _snake = require("./snake");
 var _food = require("./food");
@@ -488,8 +497,10 @@ let entityLocations = [];
 let snake1;
 let snake2;
 let entities;
+let username;
 startScreen();
-function initVariables(players) {
+function initVariables(players, usernameParam) {
+  username = usernameParam;
   snake1 = new _snake.Snake(_player.player.PLAYER1, new _vec2D.Vec2D(40, 6), new _vec2D.Vec2D(51, 6), new _vec2D.Vec2D(52, 6));
   snakes = [snake1];
   if (players == 2) {
@@ -516,8 +527,9 @@ function tick() {
   draw();
 }
 let prevRenderTime;
+let currentFrame;
 function gameLoop(currentTime) {
-  window.requestAnimationFrame(gameLoop);
+  currentFrame = window.requestAnimationFrame(gameLoop);
   const difference = (currentTime - prevRenderTime) / 1000;
   if (difference < 1 / snake1.speed) return;
   prevRenderTime = currentTime;
@@ -545,15 +557,32 @@ function handleWarpPowerup() {
   });
 }
 let startScreenActive = true;
-async function startScreen() {
+async function drawLeaderboard() {
+  let leaderboardOffset = 100;
+  let count = 1;
   const scores = await _db.getScores();
-  console.log(scores);
+  scores.forEach(value => {
+    const username = value.username;
+    const score = value.score;
+    const date = value.date;
+    gameboard.fillStyle = "black";
+    gameboard.font = "25px Ariel";
+    gameboard.fillText(String(count++), canvasDimension.x / 2 - 200, leaderboardOffset);
+    gameboard.fillText(username, canvasDimension.x / 2 - 150, leaderboardOffset);
+    gameboard.fillText(date.substr(0, 10), canvasDimension.x / 2 - 10, leaderboardOffset);
+    gameboard.fillStyle = "green";
+    gameboard.fillText(String(score), canvasDimension.x / 2 + 120, leaderboardOffset);
+    leaderboardOffset += 20;
+  });
+}
+async function startScreen() {
+  await drawLeaderboard();
   let activeButton = 1;
   gameboard.fillStyle = "black";
   gameboard.lineWidth = 2;
   gameboard.strokeStyle = "green";
-  const button1 = new _vec2D.Vec2D(canvasDimension.x / 2 - 100, canvasDimension.y / 2);
-  const button2 = new _vec2D.Vec2D(canvasDimension.x / 2, canvasDimension.y / 2);
+  const button1 = new _vec2D.Vec2D(canvasDimension.x / 2 - 100, canvasDimension.y * 0.9);
+  const button2 = new _vec2D.Vec2D(canvasDimension.x / 2, canvasDimension.y * 0.9);
   gameboard.fillRect(button1.x, button1.y, 60, 50);
   gameboard.strokeRect(button1.x, button1.y, 60, 50);
   gameboard.fillRect(button2.x, button2.y, 60, 50);
@@ -585,7 +614,12 @@ async function startScreen() {
     }
     if (ev.key == "Enter") {
       startScreenActive = false;
-      initVariables(activeButton);
+      let usernameField = document.getElementById("go");
+      let username = usernameField.value.substr(0, 8);
+      if (username == "") username = "Unknown";
+      usernameField.remove();
+      console.log(username);
+      initVariables(activeButton, username);
     }
   });
 }
@@ -634,11 +668,11 @@ class Snake {
     this.snakeParts.pop();
     this.snakeParts.unshift(newHead);
   }
-  async kill() {
-    await _db.sendScore("Ralle", this.snakeParts.length).then(res => {
+  kill() {
+    window.cancelAnimationFrame(_main.currentFrame);
+    _db.sendScore(_main.username, this.snakeParts.length).then(res => {
       console.log(res);
-    }).catch(reason => console.log(reason));
-    window.location.reload();
+    }).catch(reason => console.log(reason)).then(value => window.location.reload());
     alert(this.color + " loses");
   }
   warp(newHead) {
@@ -847,9 +881,13 @@ _parcelHelpers.export(exports, "Vec2D", function () {
 });
 var _main = require("./main");
 class Vec2D {
-  constructor(x, y) {
+  constructor(x, y, width, height) {
     this.x = x;
     this.y = y;
+    if (height && width) {
+      this.height = height;
+      this.width = width;
+    }
   }
   isOn(other) {
     if (other.y === this.y && other.x === this.x) return true;
@@ -967,6 +1005,7 @@ _parcelHelpers.export(exports, "getScores", function () {
   return getScores;
 });
 async function sendScore(username, score) {
+  console.log("sending score");
   try {
     if (username && score) {
       await fetch("http://localhost:3000/scores", {
@@ -985,6 +1024,7 @@ async function sendScore(username, score) {
   }
 }
 async function getScores() {
+  console.log("getting scores");
   let scores;
   try {
     await fetch("http://localhost:3000/scores", {

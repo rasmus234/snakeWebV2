@@ -1,5 +1,5 @@
 import "./Drawable"
-import {canvasDimension, snakes, tileHeight, tileWidth} from "./main"
+import {canvasDimension, currentFrame, snakes, startScreen, tileHeight, tileWidth, username} from "./main"
 import {Vec2D} from "./vec2D"
 import {getDirection} from "./input"
 import {Drawable} from "./Drawable"
@@ -52,13 +52,13 @@ export class Snake implements Entity {
         this.snakeParts.unshift(newHead)
     }
 
-    private async kill() {
-        await sendScore("Ralle", this.snakeParts.length).then(res => {
+    private kill() {
+        window.cancelAnimationFrame(currentFrame)
+        sendScore(username, this.snakeParts.length).then(res => {
             console.log(res)
-        }).catch(reason => console.log(reason))
-
-        window.location.reload()
+        }).catch(reason => console.log(reason)).then(value => window.location.reload())
         alert(this.color + " loses")
+
     }
 
     private warp(newHead: Vec2D) {

@@ -3,11 +3,16 @@ import {canvasDimension, entityLocations, foods, powerups, snakes, tileHeight, t
 export class Vec2D {
     x: number
     y: number
+    width?: number
+    height?: number
 
-
-    constructor(x: number, y: number) {
+    constructor(x: number, y: number,width?,height?) {
         this.x = x
         this.y = y
+        if (height && width){
+            this.height = height
+            this.width = width
+        }
     }
 
 
@@ -15,7 +20,6 @@ export class Vec2D {
         if (other.y === this.y && other.x === this.x) return true
         return false
     }
-
 
     setRandomLocation?() {
         let x: number

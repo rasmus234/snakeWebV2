@@ -1,4 +1,5 @@
-export async function sendScore(username, score: number) {
+export async function sendScore(username: string, score: number) {
+    console.log("sending score")
     try {
         if (username && score) {
             await fetch("http://localhost:3000/scores", {
@@ -17,6 +18,7 @@ export async function sendScore(username, score: number) {
 }
 
 export async function getScores(): Promise<any[]>{
+    console.log("getting scores")
     let scores
     try {
         await fetch("http://localhost:3000/scores", {

@@ -4,7 +4,6 @@
     "target": "es6",
     "sourceMap": true,
     "lib": [
-      "ES6",
       "dom",
       "ES2019"
     ],

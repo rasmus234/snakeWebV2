@@ -24,10 +24,12 @@ export let entityLocations: Vec2D[] = []
 let snake1: Snake
 let snake2: Snake
 export let entities
+export let username
 
 startScreen()
-function initVariables(players: number)
-{
+
+function initVariables(players: number, usernameParam: string) {
+    username = usernameParam
     snake1 = new Snake(player.PLAYER1, new Vec2D(40, 6), new Vec2D(51, 6), new Vec2D(52, 6))
     snakes = [snake1]
     if (players == 2) {
@@ -36,7 +38,7 @@ function initVariables(players: number)
     }
 
     powerups = [new Warp()]
-    if (players == 2){
+    if (players == 2) {
         powerups.push(new EatOthers())
     }
 
@@ -62,10 +64,11 @@ function tick() {
 }
 
 let prevRenderTime: number
-
+export let currentFrame
 
 function gameLoop(currentTime: number) {
-    window.requestAnimationFrame(gameLoop)
+
+    currentFrame = window.requestAnimationFrame(gameLoop)
     const difference = (currentTime - prevRenderTime) / 1000
     if (difference < 1 / snake1.speed) return
     prevRenderTime = currentTime
@@ -95,17 +98,38 @@ function handleWarpPowerup() {
         }
     })
 }
-let startScreenActive = true;
-async function startScreen(): Promise<any> {
-    const scores = await getScores()
-    console.log(scores)
+
+let startScreenActive = true
+
+async function drawLeaderboard() {
+    let leaderboardOffset = 100
+    let count = 1
+    const scores: Array<any> = await getScores()
+    scores.forEach(value => {
+        const username: string = value.username
+        const score: number = value.score
+        const date: string = value.date
+        gameboard.fillStyle = "black"
+        gameboard.font = "25px Ariel"
+        gameboard.fillText(String(count++), canvasDimension.x / 2 - 200, leaderboardOffset)
+        gameboard.fillText(username, canvasDimension.x / 2 - 150, leaderboardOffset)
+        gameboard.fillText(date.substr(0, 10), canvasDimension.x / 2 - 10, leaderboardOffset)
+        gameboard.fillStyle = "green"
+        gameboard.fillText(String(score), canvasDimension.x / 2 + 120, leaderboardOffset)
+        leaderboardOffset += 20
+    })
+}
+
+export async function startScreen() {
+    await drawLeaderboard()
+
 
     let activeButton: number = 1
     gameboard.fillStyle = "black"
     gameboard.lineWidth = 2
     gameboard.strokeStyle = "green"
-    const button1: Vec2D = new Vec2D(canvasDimension.x / 2 - 100, canvasDimension.y / 2)
-    const button2: Vec2D = new Vec2D(canvasDimension.x / 2, canvasDimension.y / 2)
+    const button1: Vec2D = new Vec2D(canvasDimension.x / 2 - 100, canvasDimension.y * 0.9)
+    const button2: Vec2D = new Vec2D(canvasDimension.x / 2, canvasDimension.y * 0.9)
     gameboard.fillRect(button1.x, button1.y, 60, 50)
     gameboard.strokeRect(button1.x, button1.y, 60, 50)
     gameboard.fillRect(button2.x, button2.y, 60, 50)
@@ -141,7 +165,12 @@ async function startScreen(): Promise<any> {
         }
         if (ev.key == "Enter") {
             startScreenActive = false
-            initVariables(activeButton)
+            let usernameField = document.getElementById("go") as HTMLInputElement
+            let username = usernameField.value.substr(0,8)
+            if (username =="") username = "Unknown"
+            usernameField.remove()
+            console.log(username)
+            initVariables(activeButton, username)
         }
     })
 
