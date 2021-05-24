@@ -1,3 +1,4 @@
+require("dotenv").config();
 import {getScores, sendScore} from "./db"
 import {Snake} from "./snake"
 import {Food} from "./food"
