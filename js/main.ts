@@ -1,13 +1,11 @@
-require("dotenv").config();
-import {getScores, sendScore} from "./db"
+export const scoresPromise: Promise<Array<any>> = getScores()
+require("dotenv").config()
+import {getScores} from "./db"
 import {Snake} from "./snake"
 import {Food} from "./food"
 import {Vec2D} from "./vec2D"
-import {Drawable} from "./Drawable"
 import {player} from "./player"
-import {Entity} from "./entity"
 import {EatOthers, Powerup, Warp} from "./powerup"
-import {Image} from "canvas"
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement
 const gameboard: CanvasRenderingContext2D = canvas.getContext("2d")
@@ -105,8 +103,8 @@ let startScreenActive = true
 async function drawLeaderboard() {
     let leaderboardOffset = 100
     let count = 1
-    const scores: Array<any> = await getScores()
-    scores.forEach(value => {
+    const scores: Array<any> = await scoresPromise
+    scores.forEach((value, index) => {
         const username: string = value.username
         const score: number = value.score
         const date: string = value.date
@@ -114,7 +112,7 @@ async function drawLeaderboard() {
         gameboard.font = "25px Ariel"
         gameboard.fillText(String(count++), canvasDimension.x / 2 - 200, leaderboardOffset)
         gameboard.fillText(username, canvasDimension.x / 2 - 150, leaderboardOffset)
-        gameboard.fillText(date.replace("T","-").substr(0,16), canvasDimension.x / 2 - 10, leaderboardOffset)
+        gameboard.fillText(date.replace("T", "-").substr(0, 16), canvasDimension.x / 2 - 10, leaderboardOffset)
         gameboard.fillStyle = "green"
         gameboard.fillText(String(score), canvasDimension.x / 2 + 190, leaderboardOffset)
         leaderboardOffset += 25
@@ -167,8 +165,8 @@ export async function startScreen() {
         if (ev.key == "Enter") {
             startScreenActive = false
             let usernameField = document.getElementById("go") as HTMLInputElement
-            let username = usernameField.value.substr(0,8)
-            if (username =="") username = "Unknown"
+            let username = usernameField.value.substr(0, 8)
+            if (username == "") username = "Unknown"
             usernameField.remove()
             console.log(username)
             initVariables(activeButton, username)

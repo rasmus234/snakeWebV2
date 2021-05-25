@@ -444,6 +444,9 @@ id) /*: string*/
 },{}],"3fL2n":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 _parcelHelpers.defineInteropFlag(exports);
+_parcelHelpers.export(exports, "scoresPromise", function () {
+  return scoresPromise;
+});
 _parcelHelpers.export(exports, "canvasDimension", function () {
   return canvasDimension;
 });
@@ -483,6 +486,7 @@ var _food = require("./food");
 var _vec2D = require("./vec2D");
 var _player = require("./player");
 var _powerup = require("./powerup");
+const scoresPromise = _db.getScores();
 require("dotenv").config();
 const canvas = document.getElementById("canvas");
 const gameboard = canvas.getContext("2d");
@@ -561,8 +565,8 @@ let startScreenActive = true;
 async function drawLeaderboard() {
   let leaderboardOffset = 100;
   let count = 1;
-  const scores = await _db.getScores();
-  scores.forEach(value => {
+  const scores = await scoresPromise;
+  scores.forEach((value, index) => {
     const username = value.username;
     const score = value.score;
     const date = value.date;

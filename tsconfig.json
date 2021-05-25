@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es6",
+    "module": "system",
+    "target": "ES2019",
     "sourceMap": true,
     "lib": [
       "dom",
