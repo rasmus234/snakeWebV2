@@ -2,7 +2,7 @@ export async function sendScore(username: string, score: number) {
     console.log("sending score")
     try {
         if (username && score) {
-            await fetch(process.env["IP_ADDRESS"] +"/scores", {
+            await fetch("https://snakewebapi.herokuapp.com" +"/scores", {
                 method: "POST",
                 headers: {
                     "content-type": "application/json"
@@ -21,7 +21,7 @@ export async function getScores(): Promise<any[]>{
     console.log("getting scores")
     let scores
     try {
-        await fetch(process.env["IP_ADDRESS"] +"/scores", {
+        await fetch("https://snakewebapi.herokuapp.com" +"/scores", {
             method: "GET",
             headers: {
                 "content-type": "application/json"
