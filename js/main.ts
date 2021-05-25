@@ -117,7 +117,7 @@ async function drawLeaderboard() {
         gameboard.fillText(date.substr(0, 10), canvasDimension.x / 2 - 10, leaderboardOffset)
         gameboard.fillStyle = "green"
         gameboard.fillText(String(score), canvasDimension.x / 2 + 120, leaderboardOffset)
-        leaderboardOffset += 20
+        leaderboardOffset += 25
     })
 }
 
