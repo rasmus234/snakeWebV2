@@ -570,9 +570,9 @@ async function drawLeaderboard() {
     gameboard.font = "25px Ariel";
     gameboard.fillText(String(count++), canvasDimension.x / 2 - 200, leaderboardOffset);
     gameboard.fillText(username, canvasDimension.x / 2 - 150, leaderboardOffset);
-    gameboard.fillText(date.substr(0, 10), canvasDimension.x / 2 - 10, leaderboardOffset);
+    gameboard.fillText(date.replace("T", "-").substr(0, 16), canvasDimension.x / 2 - 10, leaderboardOffset);
     gameboard.fillStyle = "green";
-    gameboard.fillText(String(score), canvasDimension.x / 2 + 120, leaderboardOffset);
+    gameboard.fillText(String(score), canvasDimension.x / 2 + 190, leaderboardOffset);
     leaderboardOffset += 25;
   });
 }
@@ -582,8 +582,8 @@ async function startScreen() {
   gameboard.fillStyle = "black";
   gameboard.lineWidth = 2;
   gameboard.strokeStyle = "green";
-  const button1 = new _vec2D.Vec2D(canvasDimension.x / 2 - 100, canvasDimension.y * 0.9);
-  const button2 = new _vec2D.Vec2D(canvasDimension.x / 2, canvasDimension.y * 0.9);
+  const button1 = new _vec2D.Vec2D(canvasDimension.x / 2 - 70, canvasDimension.y * 0.9);
+  const button2 = new _vec2D.Vec2D(canvasDimension.x / 2 + 30, canvasDimension.y * 0.9);
   gameboard.fillRect(button1.x, button1.y, 60, 50);
   gameboard.strokeRect(button1.x, button1.y, 60, 50);
   gameboard.fillRect(button2.x, button2.y, 60, 50);
