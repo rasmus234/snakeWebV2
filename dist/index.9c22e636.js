@@ -964,6 +964,7 @@ class Powerup {
       let snakeHead = snake.snakeParts[0];
       let snakeOnPowerup = snakeHead.isOn(this.location);
       if (snakeOnPowerup) {
+        this.timeLeft = this.time;
         this.location.x = null;
         this.location.y = null;
         this.currentOwner = snake;
