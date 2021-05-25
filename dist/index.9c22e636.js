@@ -518,7 +518,7 @@ function initVariables(players, usernameParam) {
   }
   foods = _food.Food.foodArray(30);
   entities = [...snakes, ...foods, ...powerups];
-  entityLocations = [...snakes.flatMap(value => value.snakeParts), ...foods.map(value => value.location), ...powerups.map(value => value.location)];
+  entityLocations = [...foods.map(value => value.location), ...powerups.map(value => value.location)];
   window.requestAnimationFrame(gameLoop);
 }
 function draw() {
@@ -584,7 +584,7 @@ async function drawLeaderboard() {
     leaderboardOffset += 25;
   });
 }
-async function startScreen() {
+function startScreen() {
   drawLeaderboard();
   let activeButton = 1;
   gameboard.fillStyle = "black";
@@ -911,9 +911,7 @@ class Vec2D {
       x = Math.floor(Math.random() * (_main.canvasDimension.x / _main.tileWidth));
       y = Math.floor(Math.random() * (_main.canvasDimension.y / _main.tileHeight));
       newLocation = new Vec2D(x, y);
-    } while (_main.entityLocations.some(value => {
-      value.isOn(newLocation);
-    }));
+    } while (_main.entityLocations.some(value => value.isOn(newLocation) || _main.snakes.flatMap(value1 => value1.snakeParts).some(value1 => value1.isOn(newLocation))));
     this.x = x;
     this.y = y;
   }

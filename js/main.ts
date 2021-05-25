@@ -44,7 +44,6 @@ function initVariables(players: number, usernameParam: string) {
     foods = Food.foodArray(30)
     entities = [...snakes, ...foods, ...powerups]
     entityLocations = [
-        ...snakes.flatMap(value => value.snakeParts),
         ...foods.map(value => value.location),
         ...powerups.map(value => value.location)]
     window.requestAnimationFrame(gameLoop)
@@ -106,10 +105,10 @@ async function drawLeaderboard() {
 
     gameboard.font = "25px Ariel"
     gameboard.fillStyle = "black"
-    gameboard.fillText("Loading leaderboard...",canvasDimension.x/2-65,canvasDimension.y/2)
+    gameboard.fillText("Loading leaderboard...", canvasDimension.x / 2 - 65, canvasDimension.y / 2)
 
     const scores: Array<any> = await scoresPromise
-    gameboard.clearRect(0,0,canvasDimension.x,canvasDimension.y-300)
+    gameboard.clearRect(0, 0, canvasDimension.x, canvasDimension.y - 300)
     scores.forEach((value, index) => {
         const username: string = value.username
         const score: number = value.score
@@ -125,7 +124,7 @@ async function drawLeaderboard() {
     })
 }
 
-export async function startScreen() {
+export function startScreen() {
     drawLeaderboard()
 
 

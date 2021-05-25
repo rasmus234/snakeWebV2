@@ -1,4 +1,4 @@
-import {canvasDimension, entityLocations, foods, powerups, snakes, tileHeight, tileWidth} from "./main"
+import {canvasDimension, entityLocations, snakes, tileHeight, tileWidth} from "./main"
 
 export class Vec2D {
     x: number
@@ -29,9 +29,9 @@ export class Vec2D {
             x = Math.floor(Math.random() * (canvasDimension.x / tileWidth))
             y = Math.floor(Math.random() * (canvasDimension.y / tileHeight))
             newLocation = new Vec2D(x, y)
-        } while (entityLocations.some(value => {
-            value.isOn(newLocation)
-        }))
+        } while (entityLocations.some(value => value.isOn(newLocation) ||
+            snakes.flatMap(value1 => value1.snakeParts).some(value1 => value1.isOn(newLocation))
+        ))
 
         this.x = x
         this.y = y
