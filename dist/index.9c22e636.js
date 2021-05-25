@@ -565,7 +565,11 @@ let startScreenActive = true;
 async function drawLeaderboard() {
   let leaderboardOffset = 100;
   let count = 1;
+  gameboard.font = "25px Ariel";
+  gameboard.fillStyle = "black";
+  gameboard.fillText("Loading leaderboard...", canvasDimension.x / 2 - 65, canvasDimension.y / 2);
   const scores = await scoresPromise;
+  gameboard.clearRect(0, 0, canvasDimension.x, canvasDimension.y - 300);
   scores.forEach((value, index) => {
     const username = value.username;
     const score = value.score;
@@ -581,7 +585,7 @@ async function drawLeaderboard() {
   });
 }
 async function startScreen() {
-  await drawLeaderboard();
+  drawLeaderboard();
   let activeButton = 1;
   gameboard.fillStyle = "black";
   gameboard.lineWidth = 2;

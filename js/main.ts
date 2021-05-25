@@ -103,7 +103,13 @@ let startScreenActive = true
 async function drawLeaderboard() {
     let leaderboardOffset = 100
     let count = 1
+
+    gameboard.font = "25px Ariel"
+    gameboard.fillStyle = "black"
+    gameboard.fillText("Loading leaderboard...",canvasDimension.x/2-65,canvasDimension.y/2)
+
     const scores: Array<any> = await scoresPromise
+    gameboard.clearRect(0,0,canvasDimension.x,canvasDimension.y-300)
     scores.forEach((value, index) => {
         const username: string = value.username
         const score: number = value.score
@@ -120,7 +126,7 @@ async function drawLeaderboard() {
 }
 
 export async function startScreen() {
-    await drawLeaderboard()
+    drawLeaderboard()
 
 
     let activeButton: number = 1
