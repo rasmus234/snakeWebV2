@@ -1009,7 +1009,7 @@ async function sendScore(username, score) {
   console.log("sending score");
   try {
     if (username && score) {
-      await fetch("https://snakewebv2.herokuapp.com" + "/scores", {
+      await fetch("https://snakewebapi.herokuapp.com" + "/scores", {
         method: "POST",
         headers: {
           "content-type": "application/json"
@@ -1028,7 +1028,7 @@ async function getScores() {
   console.log("getting scores");
   let scores;
   try {
-    await fetch("https://snakewebv2.herokuapp.com" + "/scores", {
+    await fetch("https://snakewebapi.herokuapp.com" + "/scores", {
       method: "GET",
       headers: {
         "content-type": "application/json"
