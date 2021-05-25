@@ -54,6 +54,7 @@ export class Snake implements Entity {
 
     private kill() {
         window.cancelAnimationFrame(currentFrame)
+        console.log(this)
         sendScore(username, this.snakeParts.length).then(res => {
             console.log(res)
         }).catch(reason => console.log(reason)).then(value => window.location.reload())
@@ -123,7 +124,7 @@ export class Snake implements Entity {
     public eatFood() {
 
         this.addSegment()
-        this.speed += 1.5
+        this.speed = Math.min(this.speed +1.5, 20)
         if (this.activePowerups.some(powerup => powerup instanceof EatOthers)) {
             this.removeSegmentOthers()
         }

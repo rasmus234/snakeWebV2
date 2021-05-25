@@ -671,6 +671,7 @@ class Snake {
   }
   kill() {
     window.cancelAnimationFrame(_main.currentFrame);
+    console.log(this);
     _db.sendScore(_main.username, this.snakeParts.length).then(res => {
       console.log(res);
     }).catch(reason => console.log(reason)).then(value => window.location.reload());
@@ -728,7 +729,7 @@ class Snake {
   }
   eatFood() {
     this.addSegment();
-    this.speed += 1.5;
+    this.speed = Math.min(this.speed + 1.5, 20);
     if (this.activePowerups.some(powerup => powerup instanceof _powerup.EatOthers)) {
       this.removeSegmentOthers();
     }
