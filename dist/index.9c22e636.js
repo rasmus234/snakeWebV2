@@ -521,6 +521,8 @@ function initVariables(players, usernameParam) {
   entityLocations = [...foods.map(value => value.location), ...powerups.map(value => value.location)];
   const musicElement = document.getElementById("music");
   musicElement.play();
+  musicElement.volume = 0.5;
+  musicElement.loop = true;
   window.requestAnimationFrame(gameLoop);
 }
 function draw() {
