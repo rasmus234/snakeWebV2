@@ -580,8 +580,8 @@ async function drawLeaderboard() {
     const date = value.date;
     gameboard.fillStyle = "black";
     gameboard.font = "25px Ariel";
-    gameboard.fillText(String(count++), canvasDimension.x / 2 - 200, leaderboardOffset);
-    gameboard.fillText(username, canvasDimension.x / 2 - 150, leaderboardOffset);
+    gameboard.fillText(String(count++), canvasDimension.x / 2 - 300, leaderboardOffset);
+    gameboard.fillText(username, canvasDimension.x / 2 - 250, leaderboardOffset);
     let newDate = new Date(date);
     newDate.setHours(newDate.getHours());
     // gameboard.fillText(date.replace("T", "-").substr(0, 16), canvasDimension.x / 2 - 10, leaderboardOffset)
@@ -631,7 +631,7 @@ function startScreen() {
     if (ev.key == "Enter") {
       startScreenActive = false;
       let usernameField = document.getElementById("go");
-      let username = usernameField.value.substr(0, 8);
+      let username = usernameField.value.substr(0, 15);
       if (username == "") username = "Unknown";
       usernameField.remove();
       console.log(username);
