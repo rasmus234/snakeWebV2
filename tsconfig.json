@@ -4,8 +4,7 @@
     "target": "ES2019",
     "sourceMap": true,
     "lib": [
-      "dom",
-      "ES2019"
+      "esnext"
     ],
     "allowSyntheticDefaultImports": true
   },

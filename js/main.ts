@@ -121,7 +121,15 @@ async function drawLeaderboard() {
         gameboard.font = "25px Ariel"
         gameboard.fillText(String(count++), canvasDimension.x / 2 - 200, leaderboardOffset)
         gameboard.fillText(username, canvasDimension.x / 2 - 150, leaderboardOffset)
-        gameboard.fillText(date.replace("T", "-").substr(0, 16), canvasDimension.x / 2 - 10, leaderboardOffset)
+        let newDate = new Date(date)
+        newDate.setHours(newDate.getHours())
+
+
+        // gameboard.fillText(date.replace("T", "-").substr(0, 16), canvasDimension.x / 2 - 10, leaderboardOffset)
+        gameboard.fillText(newDate.toLocaleString("de-AT")
+            .substr(0,16)
+            .replace(", ","-")
+            .replaceAll(".","/"), canvasDimension.x / 2 - 10, leaderboardOffset)
         gameboard.fillStyle = "green"
         gameboard.fillText(String(score), canvasDimension.x / 2 + 190, leaderboardOffset)
         leaderboardOffset += 25
