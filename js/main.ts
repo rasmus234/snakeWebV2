@@ -10,15 +10,12 @@ import {player} from "./player"
 import {EatOthers, Powerup, Teleport, Warp} from "./powerup"
 import {io, Socket} from "socket.io-client";
 
-const socket: Socket = io("http://localhost:5000")
+export const socket: Socket = io("http://localhost:5000")
 
 
 socket.on("hiFromServer", args => console.log("hi from server"))
+socket.emit("hi")
 
-for (let i = 0; i < 100; i++) {
-    socket.emit("hi","hi")
-    console.log("sending hi")
-}
 console.log(socket.id);
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement

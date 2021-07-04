@@ -447,6 +447,9 @@ _parcelHelpers.defineInteropFlag(exports);
 _parcelHelpers.export(exports, "scoresPromise", function () {
   return scoresPromise;
 });
+_parcelHelpers.export(exports, "socket", function () {
+  return socket;
+});
 _parcelHelpers.export(exports, "canvasDimension", function () {
   return canvasDimension;
 });
@@ -488,10 +491,7 @@ const scoresPromise = _db.getScores();
 require("dotenv").config();
 const socket = _socketIoClient.io("http://localhost:5000");
 socket.on("hiFromServer", args => console.log("hi from server"));
-for (let i = 0; i < 100; i++) {
-  socket.emit("hi", "hi");
-  console.log("sending hi");
-}
+socket.emit("hi");
 console.log(socket.id);
 const canvas = document.getElementById("canvas");
 const gameboard = canvas.getContext("2d");
@@ -631,6 +631,7 @@ class Snake {
   kill() {
     window.cancelAnimationFrame(_main.currentFrame);
     console.log(this);
+    _main.socket.emit("playerDead", this);
     _db.sendScore(_main.username, this.snakeParts.length).then(res => {
       console.log(res);
     }).catch(reason => console.log(reason)).then(value => window.location.reload());

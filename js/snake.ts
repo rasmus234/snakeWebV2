@@ -1,5 +1,5 @@
 import "./Drawable"
-import {canvasDimension, currentFrame, snakes, tileHeight, tileWidth, username} from "./main"
+import {canvasDimension, currentFrame, snakes, socket, tileHeight, tileWidth, username} from "./main"
 import {Vec2D} from "./vec2D"
 import {getDirection} from "./input"
 import {player} from "./player"
@@ -54,6 +54,7 @@ export class Snake implements Entity {
     private kill() {
         window.cancelAnimationFrame(currentFrame)
         console.log(this)
+        socket.emit("playerDead",this)
         sendScore(username, this.snakeParts.length).then(res => {
             console.log(res)
         }).catch(reason => console.log(reason)).then(value => window.location.reload())
