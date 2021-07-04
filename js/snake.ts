@@ -1,8 +1,7 @@
 import "./Drawable"
-import {canvasDimension, currentFrame, snakes, startScreen, tileHeight, tileWidth, username} from "./main"
+import {canvasDimension, currentFrame, snakes, tileHeight, tileWidth, username} from "./main"
 import {Vec2D} from "./vec2D"
 import {getDirection} from "./input"
-import {Drawable} from "./Drawable"
 import {player} from "./player"
 import {Entity} from "./entity"
 import {EatOthers, Powerup, Warp} from "./powerup"
@@ -65,9 +64,9 @@ export class Snake implements Entity {
     private warp(newHead: Vec2D) {
         if (this.checkBounds(newHead)) {
             if (newHead.x < 0) newHead.x = canvasDimension.x / tileWidth
-            if (newHead.x > canvasDimension.x / tileWidth) newHead.x = 0
-            if (newHead.y < 0) newHead.y = canvasDimension.y / tileHeight
-            if (newHead.y > canvasDimension.y / tileHeight) newHead.y = 0
+            else if (newHead.x > canvasDimension.x / tileWidth) newHead.x = 0
+            else if (newHead.y < 0) newHead.y = canvasDimension.y / tileHeight
+            else if (newHead.y > canvasDimension.y / tileHeight) newHead.y = 0
         }
     }
 

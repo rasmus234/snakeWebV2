@@ -81,7 +81,7 @@ export class Warp extends Powerup {
 }
 export class Teleport extends Powerup{
     color = "black"
-    time = Infinity
+    time = 10000
     constructor() {
         super()
         this.timeLeft = this.time
