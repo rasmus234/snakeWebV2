@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
+    "experimentalDecorators": true,
     "module": "commonjs",
     "target": "ES2019",
-    "sourceMap": true,
     "lib": [
       "esnext"
     ],

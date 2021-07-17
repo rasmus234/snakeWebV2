@@ -9,7 +9,7 @@ export async function sendScore(username: string, score: number) {
                 },
                 "body": JSON.stringify({username: username, score: score})
 
-            }).then(res => console.log(res));
+            }).then(res => console.log(res)).catch(e => console.log("couldnt send score"));
         }
 
     } catch (e) {
@@ -28,6 +28,7 @@ export async function getScores(): Promise<any[]>{
             },
         }).then(res => res.json())
             .then(data => scores = data)
+            .catch(e => console.log("couldnt get scores"))
     } catch (e) {
         console.log(e)
     }

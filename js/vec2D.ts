@@ -1,4 +1,4 @@
-import {canvasDimension, entityLocations, snakes, tileHeight, tileWidth} from "./main"
+import {canvasDimension, entityLocations, snakes, tileHeight, tileWidth} from "../index"
 
 export class Vec2D {
     x: number

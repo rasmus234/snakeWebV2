@@ -1,3 +1,3 @@
-interface Updatable {
+export interface Updatable {
     update()
 }

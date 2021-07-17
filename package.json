@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.html",
   "scripts": {
-    "dev": "parcel index.html --open",
+    "dev": "snowpack dev",
     "build": "parcel build index.html"
   },
   "keywords": [],
@@ -16,8 +16,13 @@
   },
   "dependencies": {
     "canvas": "^2.7.0",
+    "class-transformer": "^0.4.0",
+    "dom": "^0.0.3",
     "jsdom": "^14.1.0",
+    "json-diff": "^0.5.4",
     "lodash": "^4.17.21",
+    "reflect-metadata": "^0.1.13",
+    "snowpack": "^3.8.2",
     "socket.io": "^4.1.2",
     "socket.io-client": "^4.1.2",
     "ts-node": "^9.1.1"

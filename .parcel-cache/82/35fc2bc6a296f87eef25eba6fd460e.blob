@@ -1,1 +1,0 @@
-body{height:100vh;width:100vw;background-color:#000}#canvas,body{display:flex;justify-content:center;align-items:center;margin:0}#canvas{background-color:#ccc}

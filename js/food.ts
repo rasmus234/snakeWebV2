@@ -1,18 +1,19 @@
 import {Vec2D} from "./vec2D"
-import {Drawable} from "./Drawable"
-import {canvasDimension, tileWidth, tileHeight, snakes} from "./main"
-import {Snake} from "./snake"
+import {tileWidth, tileHeight, snakes} from "../index"
 import {Entity} from "./entity"
-import {Warp} from "./powerup"
-import {Image, ImageData} from "canvas"
 
 export class Food implements Entity {
     location: Vec2D
     color = "#fdc601"
 
-    constructor() {
-        this.location = new Vec2D(0,0)
-        this.location.setRandomLocation()
+    constructor(location?: Vec2D) {
+        if (location) {
+            this.location = location
+        } else {
+            this.location = new Vec2D(0, 0)
+            this.location.setRandomLocation()
+        }
+
 
     }
 
@@ -44,7 +45,6 @@ export class Food implements Entity {
         })
 
     }
-
 
 
 }
