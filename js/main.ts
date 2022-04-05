@@ -48,7 +48,7 @@ function initVariables(players: number, usernameParam: string) {
         ...powerups.map(value => value.location)]
     const musicElement = document.getElementById("music") as HTMLAudioElement
     musicElement.play()
-    musicElement.volume = 0.5
+    musicElement.volume = 0.1
     musicElement.loop = true
     window.requestAnimationFrame(gameLoop)
 }
